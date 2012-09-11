@@ -4,7 +4,7 @@ set run=$1
 set file=$2
 echo processing run $run file $file
 source /home/gluex/halld/build_scripts/gluex_env_jlab.csh
-hd_root --nthreads=Ncores -PPLUGINS=phys_tree bggen_hdgeant_smeared_${1}_${2}.hddm
+hd_root --nthreads=Ncores -PPLUGINS=phys_tree,danarest bggen_hdgeant_smeared_${1}_${2}.hddm
 echo ls -l
 ls -l
 echo copy
