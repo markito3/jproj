@@ -276,7 +276,7 @@ sub submit {
     }
     print "limit = $limit\n";
 
-    $sql = "SELECT run, file FROM $project WHERE submitted=0 order by run desc, file desc limit $limit";
+    $sql = "SELECT run, file FROM $project WHERE submitted=0 order by run, file limit $limit";
     make_query($dbh_db, \$sth);
     $i = 0;
     while (@row = $sth->fetchrow_array) {
