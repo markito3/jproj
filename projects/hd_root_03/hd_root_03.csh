@@ -8,7 +8,8 @@ hd_root --nthreads=Ncores -PPLUGINS=phys_tree,danarest bggen_hdgeant_smeared_${1
 echo ls -l
 ls -l
 echo copy
-cp -v hd_root.root /volatile/halld/home/marki/proj/hd_root/hd_root_${run}_${file}.root
+mkdir -p /volatile/halld/home/marki/proj/hd_root_03
+cp -v dana_rest.hddm /volatile/halld/home/marki/proj/hd_root_03/dana_rest_${run}_${file}.hddm
 echo ==environment==
 printenv
 exit
