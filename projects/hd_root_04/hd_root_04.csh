@@ -7,8 +7,7 @@ echo processing run $run file $file
 source /home/marki/dc/setup.csh
 echo ==environment==
 printenv
-#hd_root --nthreads=Ncores -PPLUGINS=phys_tree,danarest bggen_hdgeant_smeared_${run}_${file}.hddm
-hd_root --nthreads=Ncores -PEVENTS_TO_KEEP=100 -PPLUGINS=phys_tree,danarest bggen_hdgeant_smeared_${run}_${file}.hddm
+hd_root -PPLUGINS=phys_tree,danarest bggen_hdgeant_smeared_${run}_${file}.hddm
 echo ls -l
 ls -l
 echo copy
