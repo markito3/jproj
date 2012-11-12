@@ -4,10 +4,10 @@ set project=$1
 set run=$2
 set file=$3
 echo processing run $run file $file
-source /home/marki/dc/setup.csh
+source /home/marki/gluex/setup.csh
 echo ==environment==
 printenv
-hd_root -PPLUGINS=phys_tree,danarest bggen_hdgeant_smeared_${run}_${file}.hddm
+hd_root -PPLUGINS=danarest,monitoirng_hists hdgeant_smeared.hddm
 echo ls -l
 ls -l
 echo copy
