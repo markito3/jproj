@@ -69,6 +69,17 @@ sub create {
   PRIMARY KEY  (run,file)
 ) TYPE=MyISAM;";
     make_query($dbh_db, \$sth);
+    $number_of_runs = $ARGV[2];
+    if ($number_of_runs ne '') {
+	print "create: $number_of_runs runs requested\n";
+	for ($run = 1; $run <= $number_of_runs; $run++) {
+	    $file_number = 0; # for now at least
+	    $sql = "INSERT INTO $project SET run=$run, file = $file_number, submitted=0";
+	    make_query($dbh_db, \$sth);
+    }
+    } else{
+	print "create: no runs requested\n";
+    }
 }
 
 sub update {
