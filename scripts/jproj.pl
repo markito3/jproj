@@ -446,7 +446,9 @@ jproj.pl <project> <action> <arg1> <arg2> ...
 actions:
 
 create
-    no args
+    arg1: number of runs in the project, use only if project is not driven by
+          input data files, "update" action will never be necessary for this
+          project
 
 update
     arg1: file number to use; if omitted all file numbers will be used
