@@ -4,13 +4,13 @@ set project=$1
 set run=$2
 set file=$3
 echo processing project $project run $run file $file
-source /home/marki/gluex/setup.csh
+cp -v /home/marki/halld/data_challenge/01/conditions/* .
+source setup_jlab.csh
 #echo ==environment==
 #printenv
-cp -v /home/marki/halld/data_challenge/01/conditions/* .
 cp run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $AUGER_ID run.ffr
-gsr.pl '<number_of_events>' 500 run.ffr
+gsr.pl '<number_of_events>' 100000 run.ffr
 rm -f fort.15
 ln -s run.ffr fort.15
 bggen
