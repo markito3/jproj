@@ -10,7 +10,7 @@ source setup_jlab.csh
 #printenv
 cp run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $AUGER_ID run.ffr
-gsr.pl '<number_of_events>' 100000 run.ffr
+gsr.pl '<number_of_events>' 200000 run.ffr
 rm -f fort.15
 ln -s run.ffr fort.15
 bggen
