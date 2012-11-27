@@ -24,7 +24,7 @@ echo ls -l after mcsmear
 ls -l
 #echo copy
 #cp -v hdgeant_smeared.hddm /volatile/halld/home/marki/proj/bggen/bggen_hdgeant_smeared_${run}_${file}.hddm
-hd_root -PPLUGINS=danarest,monitoring_hists hdgeant_smeared.hddm
+hd_root -PPLUGINS=monitoring_hists,danarest -PNTHREADS=4 -PJANA:BATCH_MODE=1 hdgeant_smeared.hddm
 echo ls -l after hd_root
 ls -l
 echo copy
