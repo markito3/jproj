@@ -69,12 +69,12 @@ sub create {
   PRIMARY KEY  (run,file)
 ) TYPE=MyISAM;";
     make_query($dbh_db, \$sth);
-    $number_of_runs = $ARGV[2];
-    if ($number_of_runs ne '') {
-	print "create: $number_of_runs runs requested\n";
-	for ($run = 1; $run <= $number_of_runs; $run++) {
-	    $file_number = 0; # for now at least
-	    $sql = "INSERT INTO $project SET run=$run, file = $file_number, submitted=0";
+    $number_of_files = $ARGV[2];
+    if ($number_of_files ne '') {
+	print "create: $number_of_files runs requested\n";
+	for ($findex = 1; $findex <= $number_of_files; $findex++) {
+	    $file_number = 200000 + $findex; # hard-wired offset!
+	    $sql = "INSERT INTO $project SET run=9000, file = $file_number, submitted=0"; # hard wired run number!
 	    make_query($dbh_db, \$sth);
     }
     } else{
