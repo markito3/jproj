@@ -24,15 +24,15 @@ echo ls -l after mcsmear
 ls -l
 #echo copy
 #cp -v hdgeant_smeared.hddm /volatile/halld/home/marki/proj/bggen/bggen_hdgeant_smeared_${run}_${file}.hddm
-hd_root -PPLUGINS=monitoring_hists,danarest -PNTHREADS=4 -PJANA:BATCH_MODE=1 hdgeant_smeared.hddm
+hd_root -PPLUGINS=monitoring_hists,danarest -PJANA:BATCH_MODE=1 hdgeant_smeared.hddm
 echo ls -l after hd_root
 ls -l
 echo copy
 set rest_dir=/volatile/halld/home/marki/proj/$project/rest
 mkdir -p $rest_dir
-cp -v dana_rest.hddm $rest_dir/dana_rest_${run}_${file}.hddm
+cp -v dana_rest.hddm $rest_dir/dana_rest_${file}.hddm
 set hd_root_dir=/volatile/halld/home/marki/proj/$project/hd_root
 mkdir -p $hd_root_dir
-cp -v hd_root.root $hd_root_dir/hd_root_${run}_${file}.root
+cp -v hd_root.root $hd_root_dir/hd_root_${file}.root
 /home/marki/halld/jproj/scripts/move_log_files.sh $AUGER_ID /w/work/halld/home/marki/proj/${project}
 exit
