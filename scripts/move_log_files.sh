@@ -21,5 +21,4 @@ echo TRACK: debug >> $jsub_file
 echo COMMAND: $command_file >> $jsub_file
 echo MEMORY: 500 MB >> $jsub_file
 jsub $jsub_file
-echo cat $command_file $jsub_file
-cat $command_file $jsub_file
+echo command_file = $command_file, jsub_file = $jsub_file
