@@ -73,7 +73,7 @@ sub create {
     if ($number_of_files ne '') {
 	print "create: $number_of_files runs requested\n";
 	for ($findex = 1; $findex <= $number_of_files; $findex++) {
-	    $file_number = 200000 + $findex; # hard-wired offset!
+	    $file_number = $findex;
 	    $sql = "INSERT INTO $project SET run=9000, file = $file_number, submitted=0"; # hard wired run number!
 	    make_query($dbh_db, \$sth);
     }
