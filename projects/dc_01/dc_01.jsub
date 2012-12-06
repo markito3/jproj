@@ -4,6 +4,6 @@ TRACK: simulation
 COMMAND: /home/marki/halld/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
 MEMORY: 1500 MB
-TIME: 1440
+TIME: 600
 OS: centos62
-DISK_SPACE: 20 GB
+DISK_SPACE: 15 GB
