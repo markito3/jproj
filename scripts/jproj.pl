@@ -308,7 +308,7 @@ sub submit {
 sub submit_one {
     my($run_in, $file_in) = @_;
     $run = sprintf("%05d", $run_in);
-    $file = sprintf("%02d", $file_in);
+    $file = sprintf("%07d", $file_in);
     $jsub_file = "$jsub_file_path/${project}_${run}_${file}.jsub";
     open(JSUB, ">$jsub_file");
     $jsub_file_template = "$project.jsub";
