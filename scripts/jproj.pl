@@ -74,7 +74,7 @@ sub create {
 	print "create: $number_of_files runs requested\n";
 	for ($findex = 1; $findex <= $number_of_files; $findex++) {
 	    $file_number = $findex;
-	    $sql = "INSERT INTO $project SET run=9000, file = $file_number, submitted=0"; # hard wired run number!
+	    $sql = "INSERT INTO $project SET run=9001, file = $file_number, submitted=0"; # hard wired run number!
 	    make_query($dbh_db, \$sth);
     }
     } else{
@@ -154,7 +154,7 @@ sub update_output {
     $nfound = 0;
     while (@row = $sth->fetchrow_array) {
 	$run = sprintf("%05d", $row[0]);
-	$file = sprintf("%02d", $row[1]);
+	$file = sprintf("%07d", $row[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
@@ -202,7 +202,7 @@ sub update_silo {
     $nfound = 0;
     while (@row = $sth->fetchrow_array) {
 	$run = sprintf("%05d", $row[0]);
-	$file = sprintf("%02d", $row[1]);
+	$file = sprintf("%07d", $row[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
@@ -247,7 +247,7 @@ sub update_cache {
     $nfound = 0;
     while (@row = $sth->fetchrow_array) {
 	$run = sprintf("%05d", $row[0]);
-	$file = sprintf("%02d", $row[1]);
+	$file = sprintf("%07d", $row[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
@@ -350,14 +350,18 @@ sub unsubmit {
 sub jput {
     $output_dir = $ARGV[2];
     $silo_dir = $ARGV[3];
+    $pattern_run_only = $ARGV[4];
+    $nfile_max = $ARGV[5];
     if ($silo_dir !~ /\/$/) {
 	$silo_dir .= '/';     # add trailing "/"
     }
-    $pattern_run_only = $ARGV[4];
-    if ($pattern_run_only ne '') {
+    if ($pattern_run_only) {
 	print "file pattern will include only run number\n";
     }
     $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 1 AND jput_submitted = 0";
+    if ($nfile_max) {
+	$sql .= " limit $nfile_max"
+    }
     make_query($dbh_db, \$sth);
     $nfile = 0;
     while (@column = $sth->fetchrow_array) {
@@ -368,7 +372,7 @@ sub jput {
 	    $command = "cd $output_dir ; jput";
 	}
 	$run = sprintf("%05d", $column[0]);
-	$file = sprintf("%02d", $column[1]);
+	$file = sprintf("%07d", $column[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
@@ -404,7 +408,7 @@ sub jcache {
 	    $command = "jcache -g primex";
 	}
 	$run = sprintf("%05d", $column[0]);
-	$file = sprintf("%02d", $column[1]);
+	$file = sprintf("%07d", $column[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
@@ -476,6 +480,7 @@ jput
     arg1: output link directory
     arg2: mss directory
     arg3: if present and non-zero, use only run number in file pattern for jput
+    arg4: if present and non-zero, jput at most this many files
 
 jcache
     arg1: mss directory
