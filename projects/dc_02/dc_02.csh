@@ -30,9 +30,9 @@ ls -l
 echo copy
 set rest_dir=/volatile/halld/home/gluex/proj/$project/rest
 mkdir -p $rest_dir
-cp -v dana_rest.hddm $rest_dir/dana_rest_${file}.hddm
+cp -v dana_rest.hddm $rest_dir/dana_rest_${run}_${file}.hddm
 set hd_root_dir=/volatile/halld/home/gluex/proj/$project/hd_root
 mkdir -p $hd_root_dir
-cp -v hd_root.root $hd_root_dir/hd_root_${file}.root
+cp -v hd_root.root $hd_root_dir/hd_root_${run}_${file}.root
 /home/gluex/halld/jproj_dc_01/scripts/move_log_files.sh $AUGER_ID /w/work/halld/data_challenge/${project}/logs
 exit
