@@ -6,28 +6,30 @@ set file=$3
 echo processing project $project run $run file $file
 cp -v /home/gluex/halld/data_challenge/02/conditions/* .
 source setup_jlab.csh
-#echo ==environment==
-#printenv
+echo ==environment==
+printenv
 cp run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $file run.ffr
-gsr.pl '<number_of_events>' 50000 run.ffr
+gsr.pl '<number_of_events>' 1000 run.ffr
 rm -f fort.15
 ln -s run.ffr fort.15
 bggen
 echo ls -l after bggen
 ls -l
+cp control.in_9003 control.in
 hdgeant
 echo ls -l after hdgeant
 ls -l
 mcsmear -PJANA:BATCH_MODE=1 -PJANA:BATCH_MODE=1 hdgeant.hddm
 echo ls -l after mcsmear
 ls -l
-#echo copy
-#cp -v hdgeant_smeared.hddm /volatile/halld/home/marki/proj/bggen/bggen_hdgeant_smeared_${run}_${file}.hddm
+echo copy smeared
+mkdir -p /volatile/halld/home/gluex/proj/$project/smeared
+cp -v hdgeant_smeared.hddm /volatile/halld/home/gluex/proj/bggen/bggen_hdgeant_smeared_${run}_${file}.hddm
 hd_root -PPLUGINS=monitoring_hists,danarest -PJANA:BATCH_MODE=1 -PHDDM:USE_COMPRESSION=0 hdgeant_smeared.hddm
 echo ls -l after hd_root
 ls -l
-echo copy
+echo copy rest and hd_root
 set rest_dir=/volatile/halld/home/gluex/proj/$project/rest
 mkdir -p $rest_dir
 cp -v dana_rest.hddm $rest_dir/dana_rest_${run}_${file}.hddm
