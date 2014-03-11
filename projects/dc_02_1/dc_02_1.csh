@@ -11,12 +11,14 @@ printenv
 cp run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $file run.ffr
 gsr.pl '<number_of_events>' 1000 run.ffr
+gsr.pl '<run_number>' $run run.ffr
 rm -f fort.15
 ln -s run.ffr fort.15
 bggen
 echo ls -l after bggen
 ls -l
-cp control.in_9003 control.in
+set run4=`echo $run | perl -n -e 'printf "%4d", $_;'`
+cp -v control.in_$run4 control.in
 hdgeant
 echo ls -l after hdgeant
 ls -l
@@ -25,7 +27,7 @@ echo ls -l after mcsmear
 ls -l
 echo copy smeared
 mkdir -p /volatile/halld/home/gluex/proj/$project/smeared
-cp -v hdgeant_smeared.hddm /volatile/halld/home/gluex/proj/bggen/bggen_hdgeant_smeared_${run}_${file}.hddm
+cp -v hdgeant_smeared.hddm /volatile/halld/home/gluex/proj/$project/smeared/hdgeant_smeared_${run}_${file}.hddm
 hd_root -PPLUGINS=monitoring_hists,danarest -PJANA:BATCH_MODE=1 -PHDDM:USE_COMPRESSION=0 hdgeant_smeared.hddm
 echo ls -l after hd_root
 ls -l
