@@ -69,12 +69,13 @@ sub create {
   PRIMARY KEY  (run,file)
 ) TYPE=MyISAM;";
     make_query($dbh_db, \$sth);
-    $number_of_files = $ARGV[2];
+    $run_number = $ARGV[2];
+    $number_of_files = $ARGV[3];
     if ($number_of_files ne '') {
 	print "create: $number_of_files runs requested\n";
 	for ($findex = 1; $findex <= $number_of_files; $findex++) {
 	    $file_number = $findex;
-	    $sql = "INSERT INTO $project SET run=9001, file = $file_number, submitted=0"; # hard wired run number!
+	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, submitted=0"; # hard wired run number!
 	    make_query($dbh_db, \$sth);
     }
     } else{
@@ -450,9 +451,10 @@ jproj.pl <project> <action> <arg1> <arg2> ...
 actions:
 
 create
-    arg1: number of runs in the project, use only if project is not driven by
-          input data files, "update" action will never be necessary for this
-          project
+    arg1: run number
+    arg2: number of files in the project
+    Note: use "create" only if project is not driven by input data files,
+          "update" action will never be necessary for this project
 
 update
     arg1: file number to use; if omitted all file numbers will be used
