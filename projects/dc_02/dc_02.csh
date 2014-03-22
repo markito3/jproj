@@ -11,8 +11,14 @@ printenv
 echo ==run bggen==
 cp -v run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $file run.ffr
-gsr.pl '<number_of_events>' 50000 run.ffr
 gsr.pl '<run_number>' $run run.ffr
+if ( $run == 09001 ) then
+    gsr.pl '<number_of_events>' 30000 run.ffr
+else if ( $run == 09002 ) then
+    gsr.pl '<number_of_events>' 9000 run.ffr
+else if ( $run == 09003 ) then
+    gsr.pl '<number_of_events>' 120000 run.ffr
+endif
 rm -f fort.15
 ln -s run.ffr fort.15
 bggen
@@ -25,15 +31,14 @@ hdgeant
 echo ==ls -l after hdgeant==
 ls -l
 echo ==run mcsmear==
-#mcsmear -PJANA:BATCH_MODE=1 -PJANA:BATCH_MODE=1 -r"1 2 3" hdgeant.hddm
-mcsmear -PJANA:BATCH_MODE=1 -PJANA:BATCH_MODE=1 hdgeant.hddm
+mcsmear -PJANA:BATCH_MODE=1 -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT_FIRST_EVENT=300 -PTHREAD_TIMEOUT=300 hdgeant.hddm
 echo ls -l after mcsmear
 ls -l
 #echo ==copy smeared==
 #mkdir -p /volatile/halld/home/gluex/proj/$project/smeared
 #cp -v hdgeant_smeared.hddm /volatile/halld/home/gluex/proj/$project/smeared/hdgeant_smeared_${run}_${file}.hddm
 echo ==run hd_root==
-hd_root -PPLUGINS=monitoring_hists,danarest -PJANA:BATCH_MODE=1 -PHDDM:USE_COMPRESSION=1 hdgeant_smeared.hddm
+hd_root -PTHREAD_TIMEOUT_FIRST_EVENT=300 -PTHREAD_TIMEOUT=300 -PPLUGINS=monitoring_hists,danarest -PNTHREADS=1 -PJANA:BATCH_MODE=1 -PHDDM:USE_COMPRESSION=1 hdgeant_smeared.hddm
 echo ==ls -l after hd_root==
 ls -l
 echo ==copy rest and hd_root==
