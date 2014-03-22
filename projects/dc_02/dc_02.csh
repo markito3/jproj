@@ -31,14 +31,17 @@ hdgeant
 echo ==ls -l after hdgeant==
 ls -l
 echo ==run mcsmear==
-mcsmear -PJANA:BATCH_MODE=1 -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT_FIRST_EVENT=300 -PTHREAD_TIMEOUT=300 hdgeant.hddm
+mcsmear -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT_FIRST_EVENT=300 \
+    -PTHREAD_TIMEOUT=300 -PNTHREADS=1 hdgeant.hddm
 echo ls -l after mcsmear
 ls -l
 #echo ==copy smeared==
 #mkdir -p /volatile/halld/home/gluex/proj/$project/smeared
 #cp -v hdgeant_smeared.hddm /volatile/halld/home/gluex/proj/$project/smeared/hdgeant_smeared_${run}_${file}.hddm
 echo ==run hd_root==
-hd_root -PTHREAD_TIMEOUT_FIRST_EVENT=300 -PTHREAD_TIMEOUT=300 -PPLUGINS=monitoring_hists,danarest -PNTHREADS=1 -PJANA:BATCH_MODE=1 -PHDDM:USE_COMPRESSION=1 hdgeant_smeared.hddm
+hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT_FIRST_EVENT=300 \
+    -PTHREAD_TIMEOUT=300 -PNTHREADS=1 -PPLUGINS=monitoring_hists,danarest \
+    -PHDDM:USE_COMPRESSION=1 hdgeant_smeared.hddm
 echo ==ls -l after hd_root==
 ls -l
 echo ==copy rest and hd_root==
