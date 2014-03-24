@@ -51,7 +51,7 @@ cp -v dana_rest.hddm $rest_dir/dana_rest_${run}_${file}.hddm
 set hd_root_dir=/volatile/halld/home/gluex/proj/$project/hd_root
 mkdir -p $hd_root_dir
 cp -v hd_root.root $hd_root_dir/hd_root_${run}_${file}.root
-echo ==submit move job==
-/home/gluex/halld/jproj/scripts/move_log_files.sh $AUGER_ID /w/work/halld/data_challenge/${project}/logs
+#echo ==submit move job==
+#/home/gluex/halld/jproj/scripts/move_log_files.sh $AUGER_ID /w/work/halld/data_challenge/${project}/logs
 echo ==exit==
 exit
