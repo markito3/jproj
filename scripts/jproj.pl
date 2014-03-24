@@ -293,12 +293,17 @@ sub update_cache {
 
 sub submit {
     $limit = $ARGV[2];
+    $run_choice = $ARGV[3];
     if ($limit == 0 or $limit eq '') {
 	$limit = 1000000;
     }
     print "limit = $limit\n";
 
-    $sql = "SELECT run, file FROM $project WHERE submitted=0 order by run, file limit $limit";
+    if ($run_choice) {
+	$sql = "SELECT run, file FROM $project WHERE submitted=0 AND run=$run_choice order by file limit $limit";
+    } else {
+	$sql = "SELECT run, file FROM $project WHERE submitted=0 order by run, file limit $limit";
+    }
     make_query($dbh_db, \$sth);
     $i = 0;
     while (@row = $sth->fetchrow_array) {
@@ -489,6 +494,7 @@ update_cache
 
 submit
     arg1: limit on number of submissions
+    arg2: run choice, submit only this run
 
 unsubmit
     arg1: run number
