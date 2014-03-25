@@ -35,6 +35,8 @@ mcsmear -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT_FIRST_EVENT=300 \
     -PTHREAD_TIMEOUT=300 -PNTHREADS=1 hdgeant.hddm
 echo ls -l after mcsmear
 ls -l
+echo ==remove hdgeant.hddm==
+rm -v hdgeant.hddm
 #echo ==copy smeared==
 #mkdir -p /volatile/halld/home/gluex/proj/$project/smeared
 #cp -v hdgeant_smeared.hddm /volatile/halld/home/gluex/proj/$project/smeared/hdgeant_smeared_${run}_${file}.hddm
