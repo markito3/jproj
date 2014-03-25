@@ -66,17 +66,17 @@ sub create {
   silo tinyint(4) NOT NULL default '0',
   jcache_submitted tinyint(4) NOT NULL default '0',
   cache tinyint(4) NOT NULL default '0',
-  mod_time timestamp(14) NOT NULL,
+  mod_time timestamp NOT NULL,
   PRIMARY KEY  (run,file)
 ) TYPE=MyISAM;";
     make_query($dbh_db, \$sth);
     $sql = 
 "CREATE TABLE ${project}Job (
-  id int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  run int(11) NOT NULL default '0',
-  file int(11) NOT NULL default '0',
-  jobId int(11),
-  mod_time timestamp(14) NOT NULL
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  run int,
+  file int,
+  jobId int,
+  timeChange timestamp
 ) TYPE=MyISAM;";
     make_query($dbh_db, \$sth);
     $run_number = $ARGV[2];
