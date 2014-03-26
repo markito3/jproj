@@ -55,18 +55,28 @@ print "disconnecting from server\n";
 $rc = $dbh_db->disconnect;
 
 sub create {
+    print "starting create\n";
     $sql = 
 "CREATE TABLE $project (
   run int(11) NOT NULL default '0',
-  file mediumint(9) NOT NULL default '0',
+  file int(11) NOT NULL default '0',
   submitted tinyint(4) NOT NULL default '0',
   output tinyint(4) NOT NULL default '0',
   jput_submitted tinyint(4) NOT NULL default '0',
   silo tinyint(4) NOT NULL default '0',
   jcache_submitted tinyint(4) NOT NULL default '0',
   cache tinyint(4) NOT NULL default '0',
-  mod_time timestamp(14) NOT NULL,
+  mod_time timestamp NOT NULL,
   PRIMARY KEY  (run,file)
+) TYPE=MyISAM;";
+    make_query($dbh_db, \$sth);
+    $sql = 
+"CREATE TABLE ${project}Job (
+  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  run int,
+  file int,
+  jobId int,
+  timeChange timestamp
 ) TYPE=MyISAM;";
     make_query($dbh_db, \$sth);
     $run_number = $ARGV[2];
@@ -75,7 +85,7 @@ sub create {
 	print "create: $number_of_files runs requested\n";
 	for ($findex = 1; $findex <= $number_of_files; $findex++) {
 	    $file_number = $findex;
-	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, submitted=0"; # hard wired run number!
+	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, submitted=0";
 	    make_query($dbh_db, \$sth);
     }
     } else{
@@ -305,14 +315,18 @@ sub submit {
 	$run_this = $run_array[$j];
 	$file_this = $file_array[$j];
 	printf ">>>submitting run $run_this file $file_this<<<\n";
-	submit_one($run_this, $file_this);
+	$jobIndex = submit_one($run_this, $file_this);
+	print "DEBUG: jobindex returned from submit_one = $jobIndex\n";
 	$sql = "UPDATE $project SET submitted=1 WHERE run=$run_this and file=$file_this";
+	make_query($dbh_db, \$sth);
+	$sql = "INSERT ${project}Job SET run=$run_this, file=$file_this, jobId = $jobIndex";
 	make_query($dbh_db, \$sth);
     }
 }
 
 sub submit_one {
     my($run_in, $file_in) = @_;
+    my $jobIndex = "job index undefined";
     $run = sprintf("%05d", $run_in);
     $file = sprintf("%07d", $file_in);
     $jsub_file = "$jsub_file_path/${project}_${run}_${file}.jsub";
@@ -328,11 +342,16 @@ sub submit_one {
 	}
 	close(JSUB);
 	close(JSUB_TEMPLATE);
-	$submit_command = "jsub $jsub_file";
-	system "$submit_command\n";
+	$submit_command = "jsub $jsub_file | perl -n -e 'if(/jsub/) {print;}' | get_job_index.pl";
+	$jobIndex = `$submit_command`;
+	print "DEBUG jobIndex = $jobIndex";
+	chomp $jobIndex;
+#	system "$submit_command\n";
     } else {
 	die "error: jsub file template $jsub_file_template does not exist";
     }
+    print "DEBUG right before return, jobIndex = $jobIndex\n";
+    return $jobIndex;
 }
 
 sub unsubmit {
