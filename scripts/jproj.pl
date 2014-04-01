@@ -316,7 +316,7 @@ sub submit {
 	$file_this = $file_array[$j];
 	printf ">>>submitting run $run_this file $file_this<<<\n";
 	$jobIndex = submit_one($run_this, $file_this);
-	print "DEBUG: jobindex returned from submit_one = $jobIndex\n";
+#	print "DEBUG: jobindex returned from submit_one = $jobIndex\n";
 	$sql = "UPDATE $project SET submitted=1 WHERE run=$run_this and file=$file_this";
 	make_query($dbh_db, \$sth);
 	$sql = "INSERT ${project}Job SET run=$run_this, file=$file_this, jobId = $jobIndex";
@@ -344,13 +344,13 @@ sub submit_one {
 	close(JSUB_TEMPLATE);
 	$submit_command = "jsub $jsub_file | perl -n -e 'if(/jsub/) {print;}' | get_job_index.pl";
 	$jobIndex = `$submit_command`;
-	print "DEBUG jobIndex = $jobIndex";
+#	print "DEBUG jobIndex = $jobIndex";
 	chomp $jobIndex;
 #	system "$submit_command\n";
     } else {
 	die "error: jsub file template $jsub_file_template does not exist";
     }
-    print "DEBUG right before return, jobIndex = $jobIndex\n";
+#    print "DEBUG right before return, jobIndex = $jobIndex\n";
     return $jobIndex;
 }
 
