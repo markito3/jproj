@@ -207,7 +207,7 @@ sub update_silo {
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project";
+    $sql = "SELECT run, file FROM $project WHERE jput_submitted = 1 AND silo = 0\;";
     make_query($dbh_db, \$sth);
     $nprocessed = 0;
     $nfound = 0;
