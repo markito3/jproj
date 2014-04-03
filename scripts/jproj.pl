@@ -412,6 +412,7 @@ sub jput {
 }
 
 sub jput_it {
+# called from multiple places, whenever $sql is ready to finish and ship
     $command .= " $silo_dir";
     system $command;
 }
