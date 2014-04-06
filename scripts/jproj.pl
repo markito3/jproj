@@ -409,6 +409,7 @@ sub jput {
 	$nfile++;
     }
     jput_it();
+    print "jput $nfile files\n";
 }
 
 sub jput_it {
