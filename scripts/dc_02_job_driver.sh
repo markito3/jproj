@@ -12,10 +12,11 @@ date > $lockfile
 export PATH=/home/gluex/halld/jproj/scripts:/site/bin:$PATH
 nq=`jobstat -u gluex | grep 900 | grep _20 | grep ' A ' | wc -l`
 echo number queued is $nq
-if [ $nq -lt 300 ]
+if [ $nq -lt 600 ]
   then
     echo == submitting ==
-    jproj.pl dc_02 submit 300 9001
+    jproj.pl dc_02 submit 600 9002
+    jproj.pl dc_02 submit 50 9003
 fi
 echo == looking for disk output ==
 jproj.pl dc_02 update_output /volatile/halld/home/gluex/proj/dc_02/rest
