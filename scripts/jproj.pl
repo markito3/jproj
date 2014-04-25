@@ -479,8 +479,9 @@ actions:
 create
     arg1: run number
     arg2: number of files in the project
-    Note: use "create" only if project is not driven by input data files,
-          "update" action will never be necessary for this project
+    Note: use run number and number of files only if project is not driven
+          by input data files, "update" action will then never be necessary
+          for this project
 
 update
     arg1: file number to use; if omitted all file numbers will be used
