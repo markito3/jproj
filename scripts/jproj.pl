@@ -383,7 +383,7 @@ sub jput {
     if ($pattern_run_only) {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 1 AND jput_submitted = 0";
+    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 1 AND jput_submitted = 0 order by run, file";
     if ($nfile_max) {
 	$sql .= " limit $nfile_max"
     }
