@@ -159,7 +159,7 @@ sub update_output {
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 0";
+    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 0 order by run, file";
     make_query($dbh_db, \$sth);
     $nprocessed = 0;
     $nfound = 0;
