@@ -346,7 +346,6 @@ sub submit_one {
 	$jobIndex = `$submit_command`;
 #	print "DEBUG jobIndex = $jobIndex";
 	chomp $jobIndex;
-#	system "$submit_command\n";
     } else {
 	die "error: jsub file template $jsub_file_template does not exist";
     }
