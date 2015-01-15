@@ -12,7 +12,7 @@ echo ==run bggen==
 cp -v run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $file run.ffr
 gsr.pl '<run_number>' $run run.ffr
-gsr.pl '<number_of_events>' 100 run.ffr
+gsr.pl '<number_of_events>' 5000 run.ffr
 rm -f fort.15
 ln -s run.ffr fort.15
 bggen
@@ -27,8 +27,10 @@ mcsmear -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT_FIRST_EVENT=300 \
     -PTHREAD_TIMEOUT=300 -PNTHREADS=1 hdgeant.hddm
 echo ls -l after mcsmear
 ls -l
+echo ==translate to evio format==
+hd_ana -PPLUGINS=rawevent hdgeant_smeared.hddm
 echo ==copy smeared==
 mkdir -p /volatile/halld/data_challenge/$project/smeared
-cp -pv hdgeant_smeared.hddm /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file}.hddm
+cp -pv hdgeant_smeared.evio /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file}.evio
 echo ==exit==
 exit
