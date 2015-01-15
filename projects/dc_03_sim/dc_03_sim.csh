@@ -1,10 +1,11 @@
 #!/bin/csh
-limit stacksize unlimited
+eval `~marki/bin/delpath.pl /apps/bin`
 set project=$1
 set run=$2
 set file=$3
 echo processing project $project run $run file $file
 cp -v /home/gxproj2/halld/data_challenge/03/conditions/* .
+echo ==setting up environment==
 source setup_jlab.csh
 echo ==environment==
 printenv
