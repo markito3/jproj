@@ -4,6 +4,8 @@ set project=$1
 set run=$2
 set file=$3
 echo processing project $project run $run file $file
+set run6=`echo $run | perl -n -e 'printf "%06d", $_;'`
+set file6=`echo $file | perl -n -e 'printf "%06d", $_;'`
 cp -v /home/gxproj2/halld/data_challenge/03/conditions/* .
 echo ==setting up environment==
 source setup_jlab.csh
@@ -32,6 +34,12 @@ echo ==translate to evio format==
 hd_ana -PPLUGINS=rawevent hdgeant_smeared.hddm
 echo ==copy smeared==
 mkdir -p /volatile/halld/data_challenge/$project/smeared
-cp -pv hdgeant_smeared.evio /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file}.evio
+cp -pv rawevent_$run6.evio /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file6}.evio
+echo ==analyze the evio file and copy out the output in this job for now==
+hd_root -PPLUGINS=DAQ,TTab,monitoring_hists,danarest rawevent_$run6.evio
+mkdir -p /volatile/halld/data_challenge/$project/root
+cp -pv hd_root.root /volatile/halld/data_challenge/$project/root/hd_root_${run}_${file6}.root
+mkdir -p /volatile/halld/data_challenge/$project/rest
+cp -pv dana_rest.hddm /volatile/halld/data_challenge/$project/rest/dana_rest_${run}_${file6}.hddm
 echo ==exit==
 exit
