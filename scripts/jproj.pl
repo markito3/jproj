@@ -72,12 +72,39 @@ sub create {
     make_query($dbh_db, \$sth);
     $sql = 
 "CREATE TABLE ${project}Job (
-  id int NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  run int,
-  file int,
-  jobId int,
-  timeChange timestamp
-) TYPE=MyISAM;";
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `run` int(11) DEFAULT NULL,
+  `file` int(11) DEFAULT NULL,
+  `jobId` int(11) DEFAULT NULL,
+  `timeChange` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `username` varchar(64) DEFAULT NULL,
+  `project` varchar(64) DEFAULT NULL,
+  `name` varchar(64) DEFAULT NULL,
+  `queue` varchar(64) DEFAULT NULL,
+  `hostname` varchar(64) DEFAULT NULL,
+  `nodeTags` varchar(64) DEFAULT NULL,
+  `coresRequested` int(11) DEFAULT NULL,
+  `memoryRequested` int(11) DEFAULT NULL,
+  `status` varchar(64) DEFAULT NULL,
+  `exitCode` int(11) DEFAULT NULL,
+  `result` varchar(64) DEFAULT NULL,
+  `timeSubmitted` datetime DEFAULT NULL,
+  `timeDependency` datetime DEFAULT NULL,
+  `timePending` datetime DEFAULT NULL,
+  `timeStagingIn` datetime DEFAULT NULL,
+  `timeActive` datetime DEFAULT NULL,
+  `timeStagingOut` datetime DEFAULT NULL,
+  `timeComplete` datetime DEFAULT NULL,
+  `walltime` varchar(8) DEFAULT NULL,
+  `cput` varchar(8) DEFAULT NULL,
+  `mem` varchar(64) DEFAULT NULL,
+  `vmem` varchar(64) DEFAULT NULL,
+  `script` varchar(1024) DEFAULT NULL,
+  `files` varchar(1024) DEFAULT NULL,
+  `error` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM;";
+
     make_query($dbh_db, \$sth);
     $run_number = $ARGV[2];
     $number_of_files = $ARGV[3];
