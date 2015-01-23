@@ -1,5 +1,11 @@
 #!/usr/bin/env perl
 
+
+$project_in = $ARGV[0];
+if (! $project_in) {
+    die "ERROR: project argument was not provided";
+}
+
 # load perl modules
 use DBI;
 
@@ -17,7 +23,7 @@ if (defined $dbh_db) {
     die "Could not connect to the database server, exiting.\n";
 }
 
-$table = "dc_02Job";
+$table = $project_in . "Job";
 $sql = "SELECT jobId from $table WHERE username IS NULL OR (username IS NOT NULL AND status != \"DONE\");";
 make_query($dbh_db, \$sth_jobid);
 $count = 0;
