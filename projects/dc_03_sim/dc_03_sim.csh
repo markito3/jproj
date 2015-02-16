@@ -15,7 +15,7 @@ echo ==run bggen==
 cp -v run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $file run.ffr
 gsr.pl '<run_number>' $run run.ffr
-gsr.pl '<number_of_events>' 5000 run.ffr
+gsr.pl '<number_of_events>' 200000 run.ffr
 rm -f fort.15
 ln -s run.ffr fort.15
 bggen
@@ -35,11 +35,12 @@ hd_ana -PPLUGINS=rawevent hdgeant_smeared.hddm
 echo ==copy smeared==
 mkdir -p /volatile/halld/data_challenge/$project/smeared
 cp -pv rawevent_$run6.evio /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file6}.evio
+echo ==exit==
+exit
+
 echo ==analyze the evio file and copy out the output in this job for now==
-hd_root -PPLUGINS=DAQ,TTab,monitoring_hists,danarest rawevent_$run6.evio
+hd_root -PPLUGINS=DAQ,TTab,monitoring_hists,danarest -PJANA:BATCH_MODE=1 rawevent_$run6.evio
 mkdir -p /volatile/halld/data_challenge/$project/root
 cp -pv hd_root.root /volatile/halld/data_challenge/$project/root/hd_root_${run}_${file6}.root
 mkdir -p /volatile/halld/data_challenge/$project/rest
 cp -pv dana_rest.hddm /volatile/halld/data_challenge/$project/rest/dana_rest_${run}_${file6}.hddm
-echo ==exit==
-exit
