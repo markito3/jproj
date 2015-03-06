@@ -16,7 +16,7 @@ $project = $ARGV[0];
 $action = $ARGV[1];
 
 # connect to the database
-$host = 'halldweb1.jlab.org';
+$host = 'hallddb.jlab.org';
 $user = 'farmer';
 $password = '';
 $database = 'farming';

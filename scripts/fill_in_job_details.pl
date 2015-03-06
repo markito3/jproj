@@ -10,7 +10,7 @@ if (! $project_in) {
 use DBI;
 
 # connect to the database
-$host = 'halldweb1.jlab.org';
+$host = 'hallddb.jlab.org';
 $user = 'farmer';
 $password = '';
 $database = 'farming';
