@@ -5,5 +5,5 @@ COMMAND: /home/gxproj2/halld/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
 MEMORY: 2200 MB
 TIME: 3200
-OS: centos62
+OS: centos65
 DISK_SPACE: 10 GB
