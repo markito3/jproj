@@ -6,4 +6,4 @@ OPTIONS: {project} {run_number} {file_number}
 MEMORY: 2200 MB
 TIME: 3200
 OS: centos65
-DISK_SPACE: 10 GB
+DISK_SPACE: 12 GB
