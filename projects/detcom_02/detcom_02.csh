@@ -3,33 +3,45 @@ limit stacksize unlimited
 set project=$1
 set run=$2
 set file=$3
-echo processing project $project run $run file $file
-cp -pv /home/gluex/halld/detcom/01/conditions/* .
+echo ==start job==
+date
+echo project $project run $run file $file
+#
+cp -pv /home/gxproj4/halld/detcom/02/conditions/* .
 source setup_jlab.csh
 #
 # set number of events
 #
-set number_of_events = 25000000
+set number_of_events = 1000
 #
 # set flag based on run number
 #
 @ runno = `echo $run | awk '{print $1 + 0}'`
-if ($runno > 9103) then
+if ($runno >= 9311 && $runno <= 9316) then
     set em = 1
-else
+else if ($runno >= 9301 && $runno <= 9306)
     set em = 0
+else
+    echo bad run number found when checking for bggen or em-only
+    exit 3
 endif
 #
-echo ==start run==
-date
-echo ==environment==
-printenv
+#echo ==environment==
+#printenv
 if (! $em) then
     echo ==run bggen==
     cp -v run.ffr.template run.ffr
     gsr.pl '<random_number_seed>' $file run.ffr
     gsr.pl '<run_number>' $run run.ffr
     gsr.pl '<number_of_events>' $number_of_events run.ffr
+    if ( $run >= 09301 && $run <= 09303 )
+        gsr.pl '<epeak>' 5.499 run.ffr
+    else if ( $run >= 09304 && $run <= 09306 )
+        gsr.pl '<epeak>' 3.4 run.ffr
+    else
+        echo bad run number found setting coherent/incoherent
+	exit 2
+    endif
     rm -f fort.15
     ln -s run.ffr fort.15
     bggen
@@ -39,7 +51,7 @@ endif
 echo ==run hdgeant==
 set run4=`echo $run | perl -n -e 'printf "%4d", $_;'`
 rm -f control.in
-cp -v control.in_$run4 control.in
+cp -v control.in.template control.in
 if ($em) gsr.pl '<number_of_events>' $number_of_events control.in
 set command = hdgeant
 echo command = $command
@@ -58,11 +70,11 @@ echo command = $command
 $command
 echo ==run hd_root==
 # set the bfield map
-if ( $run == 09101 ) then
-    set bfield_option = -PBFIELD_MAP=Magnets/Solenoid/solenoid_1200A_poisson_20140520
-else if ( $run == 09102 ) then
+if ( $run == 09301 || $run == 09304 || $run == 09311 || $run == 09314 ) then
     set bfield_option = -PBFIELD_TYPE=NoField
-else if ( $run == 09104 ) then
+else if (  $run == 09302 || $run == 09305 || $run == 09312 || $run == 09315 ) then
+    set bfield_option = -PBFIELD_MAP=Magnets/Solenoid/solenoid_800A_poisson_20150427
+else if ( $run == 09303 || $run == 09306 || $run == 09313 || $run == 09316 ) then
     set bfield_option = -PBFIELD_MAP=Magnets/Solenoid/solenoid_1200A_poisson_20140520
 else if ( $run == 09105 ) then
     set bfield_option = -PBFIELD_TYPE=NoField
