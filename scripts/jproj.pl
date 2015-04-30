@@ -68,7 +68,7 @@ sub create {
   cache tinyint(4) NOT NULL default '0',
   mod_time timestamp NOT NULL,
   PRIMARY KEY  (run,file)
-) TYPE=MyISAM;";
+) ENGINE=MyISAM;";
     make_query($dbh_db, \$sth);
     $sql = 
 "CREATE TABLE ${project}Job (
