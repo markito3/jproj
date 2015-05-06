@@ -31,6 +31,8 @@ if (defined $dbh_db) {
 
 if ($action eq 'create') {
     create();
+} elsif ($action eq 'populate') {
+    populate();
 } elsif ($action eq 'update') {
     update();
 } elsif ($action eq 'update_output') {
@@ -56,6 +58,9 @@ $rc = $dbh_db->disconnect;
 
 sub create {
     print "starting create\n";
+    if ($ARGV[2]) {
+	die "arguments to create action no longer allowed, use the populate action";
+    }
     $sql = 
 "CREATE TABLE $project (
   run int(11) NOT NULL default '0',
@@ -106,6 +111,10 @@ sub create {
 ) ENGINE=MyISAM;";
 
     make_query($dbh_db, \$sth);
+}
+
+sub populate {
+
     $run_number = $ARGV[2];
     $number_of_files = $ARGV[3];
     if ($number_of_files ne '') {
@@ -114,9 +123,9 @@ sub create {
 	    $file_number = $findex;
 	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, submitted=0";
 	    make_query($dbh_db, \$sth);
-    }
-    } else{
-	print "create: no runs requested\n";
+	}
+    } else {
+	print "create: no files requested\n";
     }
 }
 
@@ -503,11 +512,13 @@ jproj.pl <project> <action> <arg1> <arg2> ...
 actions:
 
 create
+    Note: creates database tables only
+ 
+populate
     arg1: run number
-    arg2: number of files in the project
-    Note: use run number and number of files only if project is not driven
-          by input data files, "update" action will then never be necessary
-          for this project
+    arg2: number of files for this run
+    Note: use populate action only if project is not driven by input data
+          files, "update" action will then never be necessary for this project
 
 update
     arg1: file number to use; if omitted all file numbers will be used
