@@ -117,15 +117,20 @@ sub populate {
 
     $run_number = $ARGV[2];
     $number_of_files = $ARGV[3];
+    $sql = "select max(file) from $project where run = $run_number";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    $file_number_found = $row[0];
+    print "max of files found = $file_number_found\n";
     if ($number_of_files ne '') {
-	print "create: $number_of_files runs requested\n";
-	for ($findex = 1; $findex <= $number_of_files; $findex++) {
+	print "populate: $number_of_files files requested\n";
+	for ($findex = $file_number_found + 1; $findex <= $file_number_found + $number_of_files; $findex++) {
 	    $file_number = $findex;
 	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, submitted=0";
 	    make_query($dbh_db, \$sth);
 	}
     } else {
-	print "create: no files requested\n";
+	print "populate: no files requested\n";
     }
 }
 
@@ -516,7 +521,7 @@ create
  
 populate
     arg1: run number
-    arg2: number of files for this run
+    arg2: number of files to add for this run
     Note: use populate action only if project is not driven by input data
           files, "update" action will then never be necessary for this project
 
