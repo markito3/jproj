@@ -15,8 +15,8 @@ printenv
 #
 # set number of events
 #
-set number_of_events = 100
-set number_of_events_max = 10000 # will be used for em background only runs
+set number_of_events = 30000
+set number_of_events_max = 10000000 # will be used for em background only runs
 #
 # set flag based on run number
 #
@@ -129,7 +129,7 @@ endif
 set hd_root_dir=/volatile/halld/$project/hd_root
 mkdir -p $hd_root_dir
 cp -v hd_root.root $hd_root_dir/hd_root_${run}_${file}.root
-echo ==control.in== (comments and blank lines stripped)
+echo ==control.in==
 perl -n -e 'chomp; if (! /^c/ && $_) {print "$_\n";}' < control.in
 if (! $em) then
    echo ==fort.15==
