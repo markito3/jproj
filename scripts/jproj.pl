@@ -341,9 +341,9 @@ sub submit {
     print "limit = $limit\n";
 
     if ($run_choice) {
-	$sql = "SELECT run, file FROM $project WHERE submitted=0 AND run=$run_choice order by file limit $limit";
+	$sql = "SELECT run, file FROM $project WHERE submitted=0 AND run=$run_choice limit $limit";
     } else {
-	$sql = "SELECT run, file FROM $project WHERE submitted=0 order by run, file limit $limit";
+	$sql = "SELECT run, file FROM $project WHERE submitted=0 limit $limit";
     }
     make_query($dbh_db, \$sth);
     $i = 0;
