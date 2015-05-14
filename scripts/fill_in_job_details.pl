@@ -24,40 +24,61 @@ if (defined $dbh_db) {
 }
 
 $table = $project_in . "Job";
-$sql = "SELECT jobId from $table WHERE username IS NULL OR (username IS NOT NULL AND status != \"DONE\");";
+$sql = "SELECT jobId, status from $table WHERE username IS NULL OR (username IS NOT NULL AND status != \"DONE\") order by jobId;";
 make_query($dbh_db, \$sth_jobid);
 $count = 0;
+$count_pending = 0;
+$count_pending_cut = 100;
+$count_update = 0;
 while (@row = $sth_jobid->fetchrow_array) {
     $jobid = $row[0];
+    $status = $row[1];
     $count++;
+    #print "DEBUG: $jobid $status $count $count_pending\n";
     if ($count%100 == 0) {print "$count, $jobid\n";}
-    %jobhash = get_job_hash($jobid);
-    $sql = "UPDATE $table SET\n";
-    $first = 1;
-    foreach $key (keys(%jobhash)) {
-	$value = $jobhash{$key};
-	if ($key eq "walltime"
-	    || $key eq "cput"
-	    || $key eq "files"
-	    || $key eq "mem"
-	    || $key eq "vmem"
-	    ) {
-	    $value = "\"" . $value . "\"";
+    $get_job_info = 1; # assume we will ask about this job
+    if ($status eq "PENDING") {
+	if ($count_pending > $count_pending_cut) {
+	    $get_job_info = 0;
 	}
-	if ($key =~ m/^time/) {
-	    $value = substr($value, 0, 10);
-	    $value = "FROM_UNIXTIME($value)"
-	}
-	if ($key ne "id") {
-	    if ($first) {$first = 0;} else {$sql .= ",\n";}
-	    $sql .= "  $key = $value";
-	}
+    } else {
+	$count_pending = 0; # former status was not pending, start updating again
     }
-    $sql .= " WHERE jobId = $jobid;\n";
-#    print "sql = $sql";
-    make_query($dbh_db, \$sth_insert);
+    if ($get_job_info) {
+	$count_update++;
+	%jobhash = get_job_hash($jobid);
+	$sql = "UPDATE $table SET\n";
+	$first = 1;
+	foreach $key (keys(%jobhash)) {
+	    $value = $jobhash{$key};
+	    if ($key eq "walltime"
+		|| $key eq "cput"
+		|| $key eq "files"
+		|| $key eq "mem"
+		|| $key eq "vmem"
+		) {
+		$value = "\"" . $value . "\"";
+	    }
+	    if ($key =~ m/^time/) {
+		$value = substr($value, 0, 10);
+		$value = "FROM_UNIXTIME($value)"
+	    }
+	    if ($key ne "id") {
+		if ($first) {$first = 0;} else {$sql .= ",\n";}
+		$sql .= "  $key = $value";
+	    }
+	    if ($status eq "PENDING" && $key eq "status" && $value eq "\"PENDING\"") {
+		$count_pending++;
+	    }
+	}
+	$sql .= " WHERE jobId = $jobid;\n";
+	#print "DEBUG: sql = $sql";
+	make_query($dbh_db, \$sth_insert);
+    } else {
+	#print "DEBUG: skip info for job $jobid\n";
+    }
 }
-print "updated job info on $count row(s)\n";
+print "updated job info on $count_update of $count job(s)\n";
 exit;
 
 sub get_job_hash {
