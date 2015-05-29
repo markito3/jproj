@@ -95,7 +95,7 @@ if ( $runno == 9301 || $runno == 9304 || $runno == 9311 || $runno == 9314 ) then
 else if (  $runno == 9302 || $runno == 9305 || $runno == 9312 || $runno == 9315 ) then
     set bfield_option = -PBFIELD_MAP=Magnets/Solenoid/solenoid_800A_poisson_20150427
 else if ( $runno == 9303 || $runno == 9306 || $runno == 9313 || $runno == 9316 ) then
-    set bfield_option = -PBFIELD_MAP=Magnets/Solenoid/solenoid_1200A_poisson_20140520
+    set bfield_option = -PBFIELD_MAP=Magnets/Solenoid/solenoid_1300A_poisson_20150330
 else
     echo illegal run number in detcom_02.csh, run = $run
     exit 1
