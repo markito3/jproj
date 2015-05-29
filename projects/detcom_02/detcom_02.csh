@@ -53,7 +53,6 @@ if (! $em) then
     ls -lt
 endif
 echo ==run hdgeant==
-set run4=`echo $run | perl -n -e 'printf "%4d", $_;'`
 rm -f control.in
 cp -v control.in.template control.in
 gsr.pl '<number_of_events_max>' $number_of_events_max control.in # TRIG card
