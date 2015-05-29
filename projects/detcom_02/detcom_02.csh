@@ -118,10 +118,10 @@ echo ==copy output files to disk==
 set smeared_dir=/volatile/halld/$project/smeared
 mkdir -p $smeared_dir
 cp -v hdgeant_smeared.hddm $smeared_dir/hdgeant_smeared_${run}_${file}.hddm
-set evio_dir=/volatile/halld/$project/evio
-mkdir -p $evio_dir
-cp -v rawevent_0${run}.evio $evio_dir/rawevent_${run}_${file}.evio
 if (! $em) then
+    set evio_dir=/volatile/halld/$project/evio
+    mkdir -p $evio_dir
+    cp -v rawevent_0${run}.evio $evio_dir/rawevent_${run}_${file}.evio
     set rest_dir=/volatile/halld/$project/rest
     mkdir -p $rest_dir
     cp -v dana_rest.hddm $rest_dir/dana_rest_${run}_${file}.hddm
