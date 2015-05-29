@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/bash
 # delete the project and start over
 mysql -hhallddb -ufarmer farming -e "drop table detcom_02; drop table detcom_02Job"
 jproj.pl detcom_02 create
