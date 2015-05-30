@@ -1,4 +1,4 @@
-#!/bin/csh
+#!/bin/tcsh
 limit stacksize unlimited
 set project=$1
 set run=$2
@@ -7,7 +7,7 @@ echo ==start job==
 date
 echo project $project run $run file $file
 #
-cp -pv /home/gxproj4/halld/detcom/02/conditions/* .
+cp -pv /group/halld/www/halldweb/html/detcom/02/conditions/* .
 setenv PATH `pwd`:$PATH # put current directory into the path
 echo ==environment==
 source setup_jlab.csh
