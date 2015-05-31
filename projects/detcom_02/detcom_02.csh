@@ -39,7 +39,7 @@ if (! $em) then
     if ( $runno >= 9301 && $runno <= 9303 ) then
         gsr.pl '<epeak>' 5.4999 run.ffr
     else if ( $runno >= 9304 && $runno <= 9306 ) then
-        gsr.pl '<epeak>' 3.4 run.ffr
+        gsr.pl '<epeak>' 3.0 run.ffr
     else
         echo bad run number found setting coherent/incoherent
 	exit 2
