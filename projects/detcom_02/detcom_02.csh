@@ -65,7 +65,7 @@ endif
 if ($runno >= 9301 && $runno <= 9303 || $runno >= 9311 && $runno <= 9313) then 
     gsr.pl '<coherent_edge>' 5.4999 control.in # coherent running
 else if ($runno >= 9304 && $runno <= 9306|| $runno >= 9314 && $runno <= 9316) then 
-    gsr.pl '<coherent_edge>' 3.4 control.in # coherent running
+    gsr.pl '<coherent_edge>' 3.0 control.in # coherent running
 else
     echo bad run number determining coherent edge position
     exit 4
@@ -101,7 +101,7 @@ else
 endif
 # set plugins list
 if ($em) then
-    set plugins_option = -PPLUGINS=monitoring_hists,CDC_online,FDC_online,ST_online,TOF_online,FCAL_online,BCAL_online
+    set plugins_option = -PPLUGINS=monitoring_hists,CDC_online,FDC_online,TOF_online,FCAL_online,BCAL_online
 else
     set plugins_option = -PPLUGINS=monitoring_hists,danarest
 endif
