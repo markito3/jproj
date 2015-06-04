@@ -4,6 +4,6 @@ TRACK: simulation
 COMMAND: /group/halld/www/halldweb/html/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
 MEMORY: 1000 MB
-TIME: 300
+TIME: 5
 OS: centos65
 DISK_SPACE: 15 GB

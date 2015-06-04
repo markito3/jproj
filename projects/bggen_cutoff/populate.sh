@@ -1,14 +1,16 @@
 #!/bin/bash
 njobs=$1
-jproj.pl detcom_02 populate 9301 $njobs
-jproj.pl detcom_02 populate 9302 $njobs
-jproj.pl detcom_02 populate 9303 $njobs
-jproj.pl detcom_02 populate 9304 $njobs
-jproj.pl detcom_02 populate 9305 $njobs
-jproj.pl detcom_02 populate 9306 $njobs
-jproj.pl detcom_02 populate 9311 $njobs
-jproj.pl detcom_02 populate 9312 $njobs
-jproj.pl detcom_02 populate 9313 $njobs
-jproj.pl detcom_02 populate 9314 $njobs
-jproj.pl detcom_02 populate 9315 $njobs
-jproj.pl detcom_02 populate 9316 $njobs
+jproj.pl bggen_cutoff populate 9401 $njobs
+jproj.pl bggen_cutoff populate 9402 $njobs
+jproj.pl bggen_cutoff populate 9403 $njobs
+jproj.pl bggen_cutoff populate 9404 $njobs
+jproj.pl bggen_cutoff populate 9405 $njobs
+jproj.pl bggen_cutoff populate 9406 $njobs
+jproj.pl bggen_cutoff populate 9407 $njobs
+jproj.pl bggen_cutoff populate 9411 $njobs
+jproj.pl bggen_cutoff populate 9412 $njobs
+jproj.pl bggen_cutoff populate 9413 $njobs
+jproj.pl bggen_cutoff populate 9414 $njobs
+jproj.pl bggen_cutoff populate 9415 $njobs
+jproj.pl bggen_cutoff populate 9416 $njobs
+jproj.pl bggen_cutoff populate 9417 $njobs
