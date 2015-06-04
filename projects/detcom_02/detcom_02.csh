@@ -15,7 +15,7 @@ printenv
 #
 # set number of events
 #
-set number_of_events = 30000
+set number_of_events = 20000
 set number_of_events_max = 10000000 # will be used for em background only runs
 #
 # set flag based on run number
