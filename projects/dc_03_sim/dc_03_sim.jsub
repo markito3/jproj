@@ -1,7 +1,7 @@
 PROJECT: gluex
 JOBNAME: {project}_{run_number}_{file_number}
 TRACK: simulation
-COMMAND: /home/gxproj2/halld/jproj/projects/{project}/{project}.csh
+COMMAND: /group/halld/www/halldweb/html/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
 MEMORY: 3000 MB
 TIME: 3200
