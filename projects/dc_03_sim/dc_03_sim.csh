@@ -19,7 +19,7 @@ echo ==run bggen==
 cp -v run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $file run.ffr
 gsr.pl '<run_number>' $run run.ffr
-gsr.pl '<number_of_events>' 370000 run.ffr
+gsr.pl '<number_of_events>' 1200000 run.ffr
 rm -f fort.15
 ln -s run.ffr fort.15
 bggen
