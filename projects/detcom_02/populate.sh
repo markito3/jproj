@@ -1,5 +1,5 @@
 #!/bin/bash
-njobs=$1
+njobs=100
 jproj.pl detcom_02 populate 9301 $njobs
 jproj.pl detcom_02 populate 9302 $njobs
 jproj.pl detcom_02 populate 9303 $njobs
