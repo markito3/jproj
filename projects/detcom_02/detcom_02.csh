@@ -81,12 +81,12 @@ echo command = $command
 $command
 echo ls -lt after mcsmear
 ls -lt
-echo ==run hd_ana to make evio output==
-set command = "hd_ana -PPLUGINS=rawevent -PRAWEVENT:NO_PEDESTAL=0  -PRAWEVENT:NO_RANDOM_PEDESTAL=1 -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 hdgeant_smeared.hddm"
-echo command = $command
-$command
-echo ==ls -lt after hd_ana==
-ls -lt
+#echo ==run hd_ana to make evio output==
+#set command = "hd_ana -PPLUGINS=rawevent -PRAWEVENT:NO_PEDESTAL=0  -PRAWEVENT:NO_RANDOM_PEDESTAL=1 -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 hdgeant_smeared.hddm"
+#echo command = $command
+#$command
+#echo ==ls -lt after hd_ana==
+#ls -lt
 echo ==run hd_root==
 # set the bfield map
 if ( $runno == 9301 || $runno == 9304 || $runno == 9311 || $runno == 9314 ) then
@@ -99,13 +99,7 @@ else
     echo illegal run number in detcom_02.csh, run = $run
     exit 1
 endif
-# set plugins list
-if ($em) then
-    set plugins_option = -PPLUGINS=monitoring_hists,CDC_online,FDC_online,TOF_online,FCAL_online,BCAL_online
-else
-    set plugins_option = -PPLUGINS=monitoring_hists,danarest
-endif
-set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 $plugins_option $bfield_option hdgeant_smeared.hddm" 
+set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 -PPLUGINS=TAGH_online,BCAL_online,FCAL_online,ST_ONLINE_TRACKING_Monitoring,TOF_online,monitoring_hists,BCAL_Eff,p2pi_hists,p3pi_hists,BCAL_inv_mass,trackeff_missing,TRIG_online $bfield_option hdgeant_smeared.hddm" 
 echo command = $command
 $command
 echo ==ls -lt after hd_root==
@@ -118,9 +112,9 @@ set smeared_dir=/volatile/halld/$project/smeared
 mkdir -p $smeared_dir
 cp -v hdgeant_smeared.hddm $smeared_dir/hdgeant_smeared_${run}_${file}.hddm
 if (! $em) then
-    set evio_dir=/volatile/halld/$project/evio
-    mkdir -p $evio_dir
-    cp -v rawevent_0${run}.evio $evio_dir/rawevent_${run}_${file}.evio
+#    set evio_dir=/volatile/halld/$project/evio
+#    mkdir -p $evio_dir
+#    cp -v rawevent_0${run}.evio $evio_dir/rawevent_${run}_${file}.evio
     set rest_dir=/volatile/halld/$project/rest
     mkdir -p $rest_dir
     cp -v dana_rest.hddm $rest_dir/dana_rest_${run}_${file}.hddm
