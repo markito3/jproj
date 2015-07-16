@@ -3,6 +3,8 @@
 # load perl modules
 
 use DBI;
+use XML::Simple;
+use Data::Dumper;
 
 # output file directory
 $jsub_file_path = "/tmp";
@@ -14,6 +16,8 @@ if ($#ARGV == -1) {
 
 $project = $ARGV[0];
 $action = $ARGV[1];
+
+read_project_parameters();
 
 # connect to the database
 $host = 'hallddb.jlab.org';
@@ -138,6 +142,7 @@ sub update {
 
     open(CONFIG, "${project}.jproj");
     $input_string = <CONFIG>;
+    close(CONFIG);
     chomp $input_string;
 #    print "$input_string\n";
     @token = split(/\//, $input_string);
@@ -491,6 +496,17 @@ sub jcache {
 
 sub jcache_it {
     system $command;
+}
+
+sub read_project_parameters {
+    # slurp in the xml file
+    $ref = XMLin("${project}.jproj", KeyAttr=>[]);
+    # dump it to the screen for debugging only
+    print Dumper($ref);
+    $log_file_dir = $ref->{logFileDir};
+    print "log_file_dir = $log_file_dir\n";
+    $input_file_dir = $ref->{inputFileDir};
+    print "input_file_dir = $input_file_dir\n";
 }
 
 sub make_query {    
