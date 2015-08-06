@@ -3,7 +3,7 @@ JOBNAME: {project}_{run_number}_{file_number}
 TRACK: simulation
 COMMAND: /home/gxproj2/halld/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
-INPUT_FILES: /mss/halld/halld-scratch/data_challenge/dc_03_sim/smeared2/hdgeant_smeared_{run_number}_{file_number}.evio
+INPUT_FILES: /mss/halld/halld-scratch/data_challenge/dc_03_sim/smeared4/hdgeant_smeared_{run_number}_{file_number}.evio
 MEMORY: 3000 MB
 TIME: 3200
 OS: centos65
