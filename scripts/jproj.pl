@@ -472,7 +472,7 @@ sub jcache {
 	    if ($nfile != 0) {
 		jcache_it();
 	    }
-	    $command = "jcache -g primex";
+	    $command = "jcache submit halld";
 	}
 	$run = sprintf("%05d", $column[0]);
 	$file = sprintf("%07d", $column[1]);
