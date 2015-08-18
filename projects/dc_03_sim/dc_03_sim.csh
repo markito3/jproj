@@ -27,23 +27,28 @@ echo ==ls -l after bggen==
 ls -l
 echo ==run hdgeant==
 hdgeant
+rm -v bggen.hddm
 echo ==ls -l after hdgeant==
 ls -l
 echo ==run mcsmear==
 mcsmear -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT_FIRST_EVENT=300 \
     -PTHREAD_TIMEOUT=300 -PNTHREADS=1 hdgeant.hddm
-echo ls -l after mcsmear
+rm -v hdgeant.hddm
+echo ==ls -l after mcsmear==
 ls -l
-echo ==translate to evio format==
+echo ==run hd_ana, translate to evio format==
 hd_ana -PJANA:BATCH_MODE=1 -PPLUGINS=rawevent hdgeant_smeared.hddm
+rm -v hdgeant_smeared.hddm
+echo ==ls -l after hd_ana==
+ls -l
 echo ==copy smeared==
 mkdir -p /volatile/halld/data_challenge/$project/smeared
 cp -pv rawevent_$run6.evio /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run5}_${file7}.evio
 echo ==exit==
 exit
-echo ==analyze the evio file and copy out the output in this job for now==
-hd_root -PPLUGINS=DAQ,TTab,monitoring_hists,danarest -PJANA:BATCH_MODE=1 rawevent_$run5.evio
-mkdir -p /volatile/halld/data_challenge/$project/root
-cp -pv hd_root.root /volatile/halld/data_challenge/$project/root/hd_root_${run5}_${file7}.root
-mkdir -p /volatile/halld/data_challenge/$project/rest
-cp -pv dana_rest.hddm /volatile/halld/data_challenge/$project/rest/dana_rest_${run5}_${file7}.hddm
+#echo ==analyze the evio file and copy out the output in this job for now==
+#hd_root -PPLUGINS=DAQ,TTab,monitoring_hists,danarest -PJANA:BATCH_MODE=1 rawevent_$run5.evio
+#mkdir -p /volatile/halld/data_challenge/$project/root
+#cp -pv hd_root.root /volatile/halld/data_challenge/$project/root/hd_root_${run5}_${file7}.root
+#mkdir -p /volatile/halld/data_challenge/$project/rest
+#cp -pv dana_rest.hddm /volatile/halld/data_challenge/$project/rest/dana_rest_${run5}_${file7}.hddm
