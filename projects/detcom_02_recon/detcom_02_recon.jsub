@@ -3,6 +3,7 @@ JOBNAME: {project}_{run_number}_{file_number}
 TRACK: simulation
 COMMAND: /group/halld/www/halldweb/html/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
+INPUT_FILES: /mss/halld/detcom/02/smeared/hdgeant_smeared_{run_number}_{file_number}.hddm
 MEMORY: 2500 MB
 TIME: 150
 OS: centos65

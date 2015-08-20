@@ -3,6 +3,7 @@ limit stacksize unlimited
 set project=$1
 set run=$2
 set file=$3
+@ runno = `echo $run | awk '{print $1 + 0}'`
 echo ==start job==
 date
 echo project $project run $run file $file
@@ -22,7 +23,7 @@ else
     echo illegal run number in ${project}.csh, run = $run
     exit 1
 endif
-set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 -PPLUGINS=TAGH_online,BCAL_online,FCAL_online,ST_ONLINE_TRACKING_Monitoring,TOF_online,monitoring_hists,BCAL_Eff,p2pi_hists,p3pi_hists,BCAL_inv_mass,trackeff_missing,TRIG_online $bfield_option hdgeant_smeared.hddm" 
+set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 -PPLUGINS=danarest,TAGH_online,BCAL_online,FCAL_online,ST_online_tracking,TOF_online,monitoring_hists,BCAL_Eff,p2pi_hists,p3pi_hists,BCAL_inv_mass,trackeff_missing,TRIG_online $bfield_option hdgeant_smeared_${run}_${file}.hddm"
 echo command = $command
 $command
 echo ==ls -lt after hd_root==
