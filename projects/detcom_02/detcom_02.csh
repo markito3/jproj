@@ -15,16 +15,17 @@ printenv
 #
 # set number of events
 #
-set number_of_events = 20000
+set number_of_events = 30000
 set number_of_events_max = 10000000 # will be used for em background only runs
 #
 # set seed offset
 #
-set seed_offset = 40000
+@ seed_offset = 55002
 #
 # set flag based on run number
 #
 @ runno = `echo $run | awk '{print $1 + 0}'`
+@ fileno = `echo $file | awk '{print $1 + 0}'`
 if ($runno >= 9311 && $runno <= 9316) then
     set em = 1
 else if ($runno >= 9301 && $runno <= 9306) then
@@ -37,7 +38,7 @@ endif
 if (! $em) then
     echo ==run bggen==
     cp -v run.ffr.template run.ffr
-    @ seed = $file + $seed_offset
+    @ seed = $fileno + $seed_offset
     gsr.pl '<random_number_seed>' $seed run.ffr
     gsr.pl '<run_number>' $run run.ffr
     gsr.pl '<number_of_events>' $number_of_events run.ffr
