@@ -4,7 +4,7 @@
 use DBI;
 
 # connect to the database
-$host = 'halldweb1.jlab.org';
+$host = 'hallddb.jlab.org';
 $user = 'farmer';
 $password = '';
 $database = 'farming';
@@ -17,9 +17,9 @@ if (defined $dbh_db) {
     die "Could not connect to the database server, exiting.\n";
 }
 
-$table = "dc_02Job";
-$incr = 15.0;
-$i0 = 26*24*60/$incr;
+$table = "dc_03_reconJob";
+$incr = 0.5;
+$i0 = 1.2*24*60/$incr;
 for ($i = $i0; $i >= 0; $i--) {
     $delta = -$i*$incr;
     if ($i%100 == 0) {
@@ -30,14 +30,27 @@ for ($i = $i0; $i >= 0; $i--) {
     make_query($dbh_db, \$sth);
     @row = $sth->fetchrow_array;
     $date = $row[0];
-    $sql = "select sum(1) from dc_02Job where (status = 'active' and timeStagingIn < \"$date\") OR (status = 'done' and timeStagingIn < \"$date\" and timeComplete > \"$date\");";
+# running
+    $sql = "select sum(1) from dc_03_reconJob where (status = 'active' and timeActive < \"$date\") OR (status = 'done' and timeActive < \"$date\" and timeStagingOut > \"$date\");";
     make_query($dbh_db, \$sth);
     @row = $sth->fetchrow_array;
     $running = $row[0];
-    if ($running) {
-	$days = $delta/60.0/24.0;
-	print "$days $running\n";
-    }
+    if (! $running) {$running = 0;}
+# dependent
+    $sql = "select sum(1) from dc_03_reconJob where (status = 'dependency' and timeDependency < \"$date\") OR (status = 'done' and timeDependency < \"$date\" and timePending > \"$date\");";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    $dependent = $row[0];
+    if (! $dependent) {$dependent = 0;}
+# pending
+    $sql = "select sum(1) from dc_03_reconJob where (status = 'pending' and timePending < \"$date\") OR (status = 'done' and timePending < \"$date\" and timeStagingIn > \"$date\");";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    $pending = $row[0];
+    if (! $pending) {$pending = 0;}
+#
+    $days = $delta/60.0/24.0;
+    print "$days $dependent $pending $running\n";
 }
 exit;
 
