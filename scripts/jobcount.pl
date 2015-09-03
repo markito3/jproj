@@ -18,9 +18,10 @@ if (defined $dbh_db) {
 }
 
 $table = "dc_03_reconJob";
-$incr = 0.5;
-$i0 = 1.2*24*60/$incr;
-for ($i = $i0; $i >= 0; $i--) {
+$incr = 1.0;
+$ibeg = 6.6*24*60/$incr;
+$iend = 2.0*24*60/$incr;
+for ($i = $ibeg; $i >= $iend; $i--) {
     $delta = -$i*$incr;
     if ($i%100 == 0) {
 	$delta_hours = $delta/60;
