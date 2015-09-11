@@ -9,7 +9,7 @@ source setup_jlab.csh
 #
 # set number of events
 #
-set number_of_events = 30000
+set number_of_events = 5000000
 #
 # set flag based on run number
 #
