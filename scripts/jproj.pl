@@ -33,6 +33,10 @@ if ($action eq 'create') {
     create();
 } elsif ($action eq 'populate') {
     populate();
+} elsif ($action eq 'add') {
+    add();
+} elsif ($action eq 'drop') {
+    drop();
 } elsif ($action eq 'update') {
     update();
 } elsif ($action eq 'update_output') {
@@ -65,6 +69,7 @@ sub create {
 "CREATE TABLE $project (
   run int(11) NOT NULL default '0',
   file int(11) NOT NULL default '0',
+  jobId int(11),
   submitted tinyint(4) NOT NULL default '0',
   output tinyint(4) NOT NULL default '0',
   jput_submitted tinyint(4) NOT NULL default '0',
@@ -78,8 +83,6 @@ sub create {
     $sql = 
 "CREATE TABLE ${project}Job (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `run` int(11) DEFAULT NULL,
-  `file` int(11) DEFAULT NULL,
   `jobId` int(11) DEFAULT NULL,
   `timeChange` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `username` varchar(64) DEFAULT NULL,
@@ -111,6 +114,8 @@ sub create {
 ) ENGINE=MyISAM;";
 
     make_query($dbh_db, \$sth);
+# create new swif workflow
+    system "swif create -workflow $project";
 }
 
 sub populate {
@@ -332,7 +337,7 @@ sub update_cache {
     print "last pattern = $file_pattern, processed = $nprocessed, found = $nfound\n";
 }
 
-sub submit {
+sub add {
     $limit = $ARGV[2];
     $run_choice = $ARGV[3];
     if ($limit == 0 or $limit eq '') {
@@ -355,19 +360,16 @@ sub submit {
     for ($j = 0; $j < $i; $j++) {
 	$run_this = $run_array[$j];
 	$file_this = $file_array[$j];
-	printf ">>>submitting run $run_this file $file_this<<<\n";
-	$jobIndex = submit_one($run_this, $file_this);
-	#print "DEBUG: jobindex returned from submit_one = $jobIndex\n";
-	$sql = "UPDATE $project SET submitted=1 WHERE run=$run_this and file=$file_this";
-	make_query($dbh_db, \$sth);
-	$sql = "INSERT ${project}Job SET run=$run_this, file=$file_this, jobId = $jobIndex";
+	printf ">>>adding run $run_this file $file_this<<<\n";
+	$jobId = add_one($run_this, $file_this);
+	$sql = "UPDATE $project SET jobId = $jobId where run=$run_this AND file=$file_this";
 	make_query($dbh_db, \$sth);
     }
 }
 
-sub submit_one {
+sub add_one {
     my($run_in, $file_in) = @_;
-    my $jobIndex = "job index undefined";
+    my $job_id = "job index undefined";
     $run = sprintf("%05d", $run_in);
     $file = sprintf("%07d", $file_in);
     $jsub_file = "$jsub_file_path/${project}_${run}_${file}.jsub";
@@ -383,15 +385,14 @@ sub submit_one {
 	}
 	close(JSUB);
 	close(JSUB_TEMPLATE);
-	$submit_command = "jsub $jsub_file | perl -n -e 'if(/jsub/) {print;}' | get_job_index.pl";
-	$jobIndex = `$submit_command`;
-	chomp $jobIndex;
-	#print "DEBUG jobIndex = $jobIndex\n";
+	$command = "swif add-jsub -workflow $project -script $jsub_file | perl -n -e \'if(/id = /){split \" = \"; print \$_\[1\];}\'";
+	print $command, "\n";
+	$job_id = `$command`;
+	print "job_id = $job_id";
     } else {
 	die "error: jsub file template $jsub_file_template does not exist";
     }
-    #print "DEBUG right before return, jobIndex = $jobIndex\n";
-    return $jobIndex;
+    return $job_id;
 }
 
 sub unsubmit {
@@ -491,6 +492,12 @@ sub jcache {
 
 sub jcache_it {
     system $command;
+}
+
+sub drop {
+    $sql = "drop table $project, ${project}Job";
+    make_query($dbh_db, \$sth);
+    system "swif cancel $project";
 }
 
 sub make_query {    
