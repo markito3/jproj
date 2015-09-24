@@ -70,7 +70,7 @@ sub create {
   run int(11) NOT NULL default '0',
   file int(11) NOT NULL default '0',
   jobId int(11),
-  submitted tinyint(4) NOT NULL default '0',
+  added tinyint(4) NOT NULL default '0',
   output tinyint(4) NOT NULL default '0',
   jput_submitted tinyint(4) NOT NULL default '0',
   silo tinyint(4) NOT NULL default '0',
@@ -82,7 +82,7 @@ sub create {
     make_query($dbh_db, \$sth);
     $sql = 
 "CREATE TABLE ${project}Job (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `augerId` int(11) DEFAULT NULL,
   `jobId` int(11) DEFAULT NULL,
   `timeChange` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `username` varchar(64) DEFAULT NULL,
@@ -110,12 +110,14 @@ sub create {
   `script` varchar(1024) DEFAULT NULL,
   `files` varchar(1024) DEFAULT NULL,
   `error` varchar(1024) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`augerId`)
 ) ENGINE=MyISAM;";
 
     make_query($dbh_db, \$sth);
 # create new swif workflow
-    system "swif create -workflow $project";
+    $command = "swif create -workflow $project";
+    print "jproj.pl create: command = $command\n";
+    system $command;
 }
 
 sub populate {
@@ -131,7 +133,7 @@ sub populate {
 	print "populate: $number_of_files files requested\n";
 	for ($findex = $file_number_found + 1; $findex <= $file_number_found + $number_of_files; $findex++) {
 	    $file_number = $findex;
-	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, submitted=0";
+	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, added=0";
 	    make_query($dbh_db, \$sth);
 	}
     } else {
@@ -188,7 +190,7 @@ sub update {
 	    }
 	    if ($nrow == 0) {
 		print "new run: $run, file: $file_number\n";
-		$sql = "INSERT INTO $project SET run=$run, file = $file_number, submitted=0";
+		$sql = "INSERT INTO $project SET run=$run, file = $file_number, added=0";
 		make_query($dbh_db, \$sth);
 	    } elsif ($nrow > 1) {
 		die "error too many entries for run $run"; 
@@ -205,7 +207,7 @@ sub update_output {
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 0 order by run, file";
+    $sql = "SELECT run, file FROM $project WHERE added = 1 AND output = 0 order by run, file";
     make_query($dbh_db, \$sth);
     $nprocessed = 0;
     $nfound = 0;
@@ -346,9 +348,9 @@ sub add {
     print "limit = $limit\n";
 
     if ($run_choice) {
-	$sql = "SELECT run, file FROM $project WHERE submitted=0 AND run=$run_choice limit $limit";
+	$sql = "SELECT run, file FROM $project WHERE added=0 AND run=$run_choice limit $limit";
     } else {
-	$sql = "SELECT run, file FROM $project WHERE submitted=0 limit $limit";
+	$sql = "SELECT run, file FROM $project WHERE added=0 limit $limit";
     }
     make_query($dbh_db, \$sth);
     $i = 0;
@@ -385,8 +387,9 @@ sub add_one {
 	}
 	close(JSUB);
 	close(JSUB_TEMPLATE);
-	$command = "swif add-jsub -workflow $project -script $jsub_file | perl -n -e \'if(/id = /){split \" = \"; print \$_\[1\];}\'";
-	print $command, "\n";
+	$command_swif = "swif add-jsub -workflow $project -script $jsub_file";
+	$command = "$command_swif | perl -n -e \'if(/id = /){split \" = \"; print \$_\[1\];}\'";
+	print "jproj.pl add: command = $command_swif\n";
 	$job_id = `$command`;
 	print "job_id = $job_id";
     } else {
@@ -399,17 +402,17 @@ sub unsubmit {
     $run = $ARGV[2];
     $file = $ARGV[3];
     print "run = $run, file = $file\n";
-    $sql = "SELECT submitted FROM $project WHERE run = $run AND file = $file";
+    $sql = "SELECT added FROM $project WHERE run = $run AND file = $file";
     make_query($dbh_db, \$sth);
-    $submitted = 0;
+    $added = 0;
     $nrow = 0;
     while (@column = $sth->fetchrow_array) {
 	$nrow++;
-	$submitted = $column[0];
+	$added = $column[0];
     }
     if ($nrow > 1) {die "more than one entry for run/file";}
-    if ($submitted != 1) {die "job never submitted or run/file does not exist";}
-    $sql = "UPDATE $project SET submitted = 0 WHERE run = $run AND file = $file";
+    if ($added != 1) {die "job never added or run/file does not exist";}
+    $sql = "UPDATE $project SET added = 0 WHERE run = $run AND file = $file";
     make_query($dbh_db, \$sth);
 }
 
@@ -424,7 +427,7 @@ sub jput {
     if ($pattern_run_only) {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 1 AND jput_submitted = 0 order by run, file";
+    $sql = "SELECT run, file FROM $project WHERE added = 1 AND output = 1 AND jput_submitted = 0 order by run, file";
     if ($nfile_max) {
 	$sql .= " limit $nfile_max"
     }
@@ -465,7 +468,7 @@ sub jcache {
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND silo = 1 AND jcache_submitted = 0";
+    $sql = "SELECT run, file FROM $project WHERE added = 1 AND silo = 1 AND jcache_submitted = 0";
     make_query($dbh_db, \$sth);
     $nfile = 0;
     while (@column = $sth->fetchrow_array) {
