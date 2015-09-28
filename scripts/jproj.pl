@@ -364,7 +364,7 @@ sub add {
 	$file_this = $file_array[$j];
 	printf ">>>adding run $run_this file $file_this<<<\n";
 	$jobId = add_one($run_this, $file_this);
-	$sql = "UPDATE $project SET jobId = $jobId where run=$run_this AND file=$file_this";
+	$sql = "UPDATE $project SET jobId = $jobId, added = 1 where run=$run_this AND file=$file_this";
 	make_query($dbh_db, \$sth);
     }
 }
