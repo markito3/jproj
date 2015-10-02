@@ -45,8 +45,10 @@ if ($action eq 'create') {
     update_silo();
 } elsif ($action eq 'update_cache') {
     update_cache();
-} elsif ($action eq 'submit') {
-    submit();
+} elsif ($action eq 'run') {
+    run();
+} elsif ($action eq 'pause') {
+    pause();
 } elsif ($action eq 'unsubmit') {
     unsubmit();
 } elsif ($action eq 'jput') {
@@ -503,6 +505,18 @@ sub drop {
     system "swif cancel $project";
 }
 
+sub run {
+    $command = "swif run $project";
+    print "jproj.pl info: $command\n";
+    system $command;
+}
+
+sub pause {
+    $command = "swif pause $project";
+    print "jproj.pl info: $command\n";
+    system $command;
+}
+
 sub make_query {    
 
     my($dbh, $sth_ref) = @_;
@@ -538,6 +552,8 @@ populate
 update
     arg1: file number to use; if omitted all file numbers will be used
 
+add : add jobs to the workflow
+
 update_output
     arg1: output link directory
     arg2: if present and non-zero, use only run number in file pattern search
@@ -550,9 +566,9 @@ update_cache
     arg1: cache directory
     arg2: if present and non-zero, use only run number in file pattern search
 
-submit
-    arg1: limit on number of submissions
-    arg2: run choice, submit only this run
+run : run the workflow
+
+pause : pause the workflow
 
 unsubmit
     arg1: run number
