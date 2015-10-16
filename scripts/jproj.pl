@@ -506,7 +506,11 @@ sub drop {
 }
 
 sub run {
+    $job_limit = $ARGV[2];
     $command = "swif run $project";
+    if ($job_limit) {
+	$command = $command . " -joblimit $job_limit";
+    }
     print "jproj.pl info: $command\n";
     system $command;
 }
@@ -567,6 +571,8 @@ update_cache
     arg2: if present and non-zero, use only run number in file pattern search
 
 run : run the workflow
+    arg1: if present and non-zero, sets job limit, number of jobs to attempt
+          before pausing
 
 pause : pause the workflow
 
