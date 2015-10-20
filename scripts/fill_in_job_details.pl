@@ -24,18 +24,18 @@ if (defined $dbh_db) {
 }
 
 $table = $project_in . "Job";
-$sql = "SELECT jobId, status from $table WHERE username IS NULL OR (username IS NOT NULL AND status != \"DONE\") order by jobId;";
+$sql = "SELECT augerId, status from $table WHERE username IS NULL OR (username IS NOT NULL AND status != \"DONE\") order by jobId;";
 make_query($dbh_db, \$sth_jobid);
 $count = 0;
 $count_pending = 0;
 $count_pending_cut = 100;
 $count_update = 0;
 while (@row = $sth_jobid->fetchrow_array) {
-    $jobid = $row[0];
+    $augerid = $row[0];
     $status = $row[1];
     $count++;
-    #print "DEBUG: $jobid $status $count $count_pending\n";
-    if ($count%100 == 0) {print "$count, $jobid\n";}
+    #print "DEBUG: $augerid $status $count $count_pending\n";
+    if ($count%100 == 0) {print "$count, $augerid\n";}
     $get_job_info = 1; # assume we will ask about this job
     if ($status eq "PENDING") {
 	if ($count_pending > $count_pending_cut) {
@@ -46,7 +46,7 @@ while (@row = $sth_jobid->fetchrow_array) {
     }
     if ($get_job_info) {
 	$count_update++;
-	%jobhash = get_job_hash($jobid);
+	%jobhash = get_job_hash($augerid);
 	$sql = "UPDATE $table SET\n";
 	$first = 1;
 	foreach $key (keys(%jobhash)) {
@@ -71,11 +71,11 @@ while (@row = $sth_jobid->fetchrow_array) {
 		$count_pending++;
 	    }
 	}
-	$sql .= " WHERE jobId = $jobid;\n";
+	$sql .= " WHERE augerId = $augerid;\n";
 	#print "DEBUG: sql = $sql";
 	make_query($dbh_db, \$sth_insert);
     } else {
-	#print "DEBUG: skip info for job $jobid\n";
+	#print "DEBUG: skip info for job $augerid\n";
     }
 }
 print "updated job info on $count_update of $count job(s)\n";
@@ -133,6 +133,7 @@ sub get_job_hash {
 sub make_query {    
 
     my($dbh, $sth_ref) = @_;
+    #print $sql, "\n";
     $$sth_ref = $dbh->prepare($sql)
         or die "Can't prepare $sql: $dbh->errstr\n";
     

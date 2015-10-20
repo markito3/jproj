@@ -2,6 +2,8 @@
 
 use XML::Parser;
 
+$project = $ARGV[0];
+
 my $p = new XML::Parser(Style=>'Stream');
 
 #$p->parsefile($ARGV[0]);
@@ -29,6 +31,7 @@ sub EndTag {
 	$get_job_id = 0;
     } elsif ($eltype eq 'auger_id') {
 	$get_auger_id = 0;
+	print "insert into ${project}Job set jobId = $job_id, augerId = $auger_id;\n";
     }
 }
 
@@ -38,11 +41,11 @@ sub Text {
 	if ($get_job_id) {
 	    chomp $text;
 	    $job_id = $text;
-	    print "job_id = $job_id\n";
+	    #print "job_id = $job_id\n";
 	} elsif ($get_auger_id) {
 	    chomp $text;
 	    $auger_id = $text;
-	    print "auger_id = $auger_id\n";
+	    #print "auger_id = $auger_id\n";
 	}
     }
     return;
