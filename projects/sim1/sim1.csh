@@ -7,7 +7,7 @@ echo ==start job==
 date
 echo project $project run $run file $file
 #
-cp -pv /group/halld/www/halldweb/html/detcom/02.1/conditions/* .
+cp -pv /work/halld/home/sdobbs/mc_sim1/conditions/* .
 setenv PATH `pwd`:$PATH # put current directory into the path
 echo ==environment==
 source setup_jlab.csh
@@ -26,9 +26,9 @@ set number_of_events_max = 10000000 # will be used for em background only runs
 #
 @ runno = `echo $run | awk '{print $1 + 0}'`
 @ fileno = `echo $file | awk '{print $1 + 0}'`
-if ($runno >= 9311 && $runno <= 9316) then
+if ($runno >= 9011 && $runno <= 9020) then
     set em = 1
-else if ($runno >= 9301 && $runno <= 9306) then
+else if ($runno >= 9001 && $runno <= 9010) then
     set em = 0
 else
     echo bad run number found when checking for bggen or em-only
@@ -42,14 +42,6 @@ if (! $em) then
     gsr.pl '<random_number_seed>' $seed run.ffr
     gsr.pl '<run_number>' $run run.ffr
     gsr.pl '<number_of_events>' $number_of_events run.ffr
-    if ( $runno >= 9301 && $runno <= 9303 ) then
-        gsr.pl '<epeak>' 5.4999 run.ffr
-    else if ( $runno >= 9304 && $runno <= 9306 ) then
-        gsr.pl '<epeak>' 3.0 run.ffr
-    else
-        echo bad run number found setting coherent/incoherent
-	exit 2
-    endif
     rm -f fort.15
     ln -s run.ffr fort.15
     set command = bggen
@@ -68,14 +60,6 @@ if ($em) then
 else
     gsr.pl RUNNO cRUNNO control.in # comment out run number setting
 endif
-if ($runno >= 9301 && $runno <= 9303 || $runno >= 9311 && $runno <= 9313) then 
-    gsr.pl '<coherent_edge>' 5.4999 control.in # coherent running
-else if ($runno >= 9304 && $runno <= 9306|| $runno >= 9314 && $runno <= 9316) then 
-    gsr.pl '<coherent_edge>' 3.0 control.in # coherent running
-else
-    echo bad run number determining coherent edge position
-    exit 4
-endif
 set command = hdgeant
 echo command = $command
 $command
@@ -88,18 +72,7 @@ $command
 echo ls -lt after mcsmear
 ls -lt
 echo ==run hd_root==
-# set the bfield map
-if ( $runno == 9301 || $runno == 9304 || $runno == 9311 || $runno == 9314 ) then
-    set bfield_option = -PBFIELD_TYPE=NoField
-else if (  $runno == 9302 || $runno == 9305 || $runno == 9312 || $runno == 9315 ) then
-    set bfield_option = -PBFIELD_MAP=Magnets/Solenoid/solenoid_800A_poisson_20150427
-else if ( $runno == 9303 || $runno == 9306 || $runno == 9313 || $runno == 9316 ) then
-    set bfield_option = -PBFIELD_MAP=Magnets/Solenoid/solenoid_1300A_poisson_20150330
-else
-    echo illegal run number in sim1.csh, run = $run
-    exit 1
-endif
-set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 -PPLUGINS=danarest,monitoring_hists $bfield_option hdgeant_smeared.hddm"
+set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 -PPLUGINS=danarest,monitoring_hists hdgeant_smeared.hddm"
 echo command = $command
 $command
 echo ==ls -lt after hd_root==
