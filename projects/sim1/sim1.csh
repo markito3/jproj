@@ -52,7 +52,7 @@ if (! $em) then
 endif
 echo ==run hdgeant==
 rm -f control.in
-cp -v control.in.template control.in
+cp -v control.in_9001 control.in
 gsr.pl '<number_of_events_max>' $number_of_events_max control.in # TRIG card
 if ($em) then
     gsr.pl INFILE cINFILE control.in # comment out INFILE card

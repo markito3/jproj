@@ -1,2 +1,4 @@
 #!/bin/bash
-sim1.csh sim1 9306 123
+mkdir -p test
+cd test
+../sim1.csh sim1 9001 1234
