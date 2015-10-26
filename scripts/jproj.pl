@@ -361,13 +361,15 @@ sub add {
 	$file_array[$i] = $row[1];
 	$i++;
     }
-    for ($j = 0; $j < $i; $j++) {
+    $j = 0;
+    while ($j < $i && $j < $limit) {
 	$run_this = $run_array[$j];
 	$file_this = $file_array[$j];
 	printf ">>>adding run $run_this file $file_this<<<\n";
 	$jobId = add_one($run_this, $file_this);
 	$sql = "UPDATE $project SET jobId = $jobId, added = 1 where run=$run_this AND file=$file_this";
 	make_query($dbh_db, \$sth);
+	$j++;
     }
 }
 
@@ -391,9 +393,9 @@ sub add_one {
 	close(JSUB_TEMPLATE);
 	$command_swif = "swif add-jsub -workflow $project -script $jsub_file";
 	$command = "$command_swif | perl -n -e \'if(/id = /){split \" = \"; print \$_\[1\];}\'";
-	print "jproj.pl add: command = $command_swif\n";
+	#print "jproj.pl add: command = $command_swif\n";
 	$job_id = `$command`;
-	print "job_id = $job_id";
+	#print "job_id = $job_id";
     } else {
 	die "error: jsub file template $jsub_file_template does not exist";
     }
