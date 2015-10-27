@@ -55,6 +55,8 @@ if ($action eq 'create') {
     jput();
 } elsif ($action eq 'jcache') {
     jcache();
+} elsif ($action eq 'status') {
+    status();
 } else {
     print "no valid action requested\n";
 }
@@ -130,9 +132,13 @@ sub populate {
     make_query($dbh_db, \$sth);
     @row = $sth->fetchrow_array;
     $file_number_found = $row[0];
-    print "max of files found = $file_number_found\n";
+    if ($file_number_found) {
+	print "populate: max file number found = $file_number_found\n";
+    } else {
+	print "populate: no files found\n";
+    }
     if ($number_of_files ne '') {
-	print "populate: $number_of_files files requested\n";
+	print "populate: $number_of_files additional files requested\n";
 	for ($findex = $file_number_found + 1; $findex <= $file_number_found + $number_of_files; $findex++) {
 	    $file_number = $findex;
 	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, added=0";
@@ -521,6 +527,51 @@ sub pause {
     $command = "swif pause $project";
     print "jproj.pl info: $command\n";
     system $command;
+}
+
+sub status {
+
+    $sql = "select count(*) from $project;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "total = $row[0]\n";
+
+    $sql = "select count(*) from $project where added = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "added = $row[0]\n";
+
+    $sql = "select count(*) from $project where output = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "output = $row[0]\n";
+
+    $sql = "select count(*) from $project where jput_submitted = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "jput_submitted = $row[0]\n";
+
+    $sql = "select count(*) from $project where silo = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "silo = $row[0]\n";
+
+    $sql = "select count(*) from $project where jcache_submitted = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "jcache_submitted = $row[0]\n";
+
+    $sql = "select count(*) from $project where cache = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "cache = $row[0]\n";
+
+    $sth->finish();
+
+    $command = "swif status $project";
+    print "jproj.pl info: $command\n";
+    system $command;
+
 }
 
 sub make_query {    
