@@ -1,1 +1,4 @@
-no_input_files
+<jproj>
+<inputFileDir>/volatile/halld/data_challenge/dc_03_sim/smeared</inputFileDir>
+<logFileDir>/work/halld/data_challenge/dc_03_sim/logs</logFileDir>
+</jproj>
