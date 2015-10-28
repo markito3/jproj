@@ -1,4 +1,3 @@
 <jproj>
-<inputFileDir>/volatile/halld/data_challenge/dc_03_sim/smeared</inputFileDir>
-<logFileDir>/work/halld/data_challenge/dc_03_sim/logs</logFileDir>
+<inputFilePattern>/volatile/halld/detcom_02_1/smeared/hdgeant_smeared_*_*.hddm</inputFilePattern>
 </jproj>

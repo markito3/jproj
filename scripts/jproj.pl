@@ -155,16 +155,14 @@ sub populate {
 
 sub update {
 
-    open(CONFIG, "${project}.jproj");
     $input_string = <CONFIG>;
-    close(CONFIG);
-    chomp $input_string;
-#    print "$input_string\n";
-    @token = split(/\//, $input_string);
+    chomp $inputFilePattern;
+#    print "$inputFilePattern\n";
+    @token = split(/\//, $inputFilePattern);
     $name = $token[$#token];
     $name_escaped = $name;
     $name_escaped =~ s/\*/\\\*/g;
-    @token2 = split(/$name_escaped/, $input_string);
+    @token2 = split(/$name_escaped/, $inputFilePattern);
     $dir = @token2[0];
 #    print "$dir $name\n";
     @token3 = split(/\*/, $name);
@@ -584,10 +582,8 @@ sub read_project_parameters {
     $ref = XMLin("${project}.jproj", KeyAttr=>[]);
     # dump it to the screen for debugging only
     print Dumper($ref);
-    $log_file_dir = $ref->{logFileDir};
-    print "log_file_dir = $log_file_dir\n";
-    $input_file_dir = $ref->{inputFileDir};
-    print "input_file_dir = $input_file_dir\n";
+    $inputFilePattern = $ref->{inputFilePattern};
+    print "inputFilePattern = $inputFilePattern\n";
 }
 
 sub make_query {    
