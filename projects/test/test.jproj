@@ -1,1 +1,3 @@
-no_input_files
+<jproj>
+<inputFilePattern>/volatile/halld/detcom_02_1/smeared/hdgeant_smeared_*_*.hddm</inputFilePattern>
+</jproj>

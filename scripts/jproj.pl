@@ -3,6 +3,8 @@
 # load perl modules
 
 use DBI;
+use XML::Simple;
+use Data::Dumper;
 
 # output file directory
 $jsub_file_path = "/tmp";
@@ -14,6 +16,8 @@ if ($#ARGV == -1) {
 
 $project = $ARGV[0];
 $action = $ARGV[1];
+
+read_project_parameters();
 
 # connect to the database
 $host = 'hallddb.jlab.org';
@@ -151,15 +155,14 @@ sub populate {
 
 sub update {
 
-    open(CONFIG, "${project}.jproj");
     $input_string = <CONFIG>;
-    chomp $input_string;
-#    print "$input_string\n";
-    @token = split(/\//, $input_string);
+    chomp $inputFilePattern;
+#    print "$inputFilePattern\n";
+    @token = split(/\//, $inputFilePattern);
     $name = $token[$#token];
     $name_escaped = $name;
     $name_escaped =~ s/\*/\\\*/g;
-    @token2 = split(/$name_escaped/, $input_string);
+    @token2 = split(/$name_escaped/, $inputFilePattern);
     $dir = @token2[0];
 #    print "$dir $name\n";
     @token3 = split(/\*/, $name);
@@ -572,6 +575,15 @@ sub status {
     print "jproj.pl info: $command\n";
     system $command;
 
+}
+
+sub read_project_parameters {
+    # slurp in the xml file
+    $ref = XMLin("${project}.jproj", KeyAttr=>[]);
+    # dump it to the screen for debugging only
+    print Dumper($ref);
+    $inputFilePattern = $ref->{inputFilePattern};
+    print "inputFilePattern = $inputFilePattern\n";
 }
 
 sub make_query {    
