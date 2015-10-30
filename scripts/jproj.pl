@@ -221,13 +221,14 @@ sub update_output {
     make_query($dbh_db, \$sth);
     $nprocessed = 0;
     $nfound = 0;
+    $rf_separator = '_';
     while (@row = $sth->fetchrow_array) {
-	$run = sprintf("%05d", $row[0]);
-	$file = sprintf("%07d", $row[1]);
+	$run = sprintf($run_format, $row[0]);
+	$file = sprintf($file_format, $row[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
-	    $file_pattern = $run . '_' . $file;
+	    $file_pattern = $run . $rf_separator . $file;
 	}
 	open(FIND, "find $outputFileDir -maxdepth 1 -name \*$file_pattern\* |");
 	$nfile = 0;
@@ -384,14 +385,19 @@ sub add {
 sub add_one {
     my($run_in, $file_in) = @_;
     my $job_id = "job index undefined";
-    $run = sprintf("%05d", $run_in);
-    $file = sprintf("%07d", $file_in);
+    $run = sprintf($run_format, $run_in);
+    $file = sprintf($file_format, $file_in);
     $jsub_file = "$jsub_file_path/${project}_${run}_${file}.jsub";
     open(JSUB, ">$jsub_file");
     $jsub_file_template = "$project.jsub";
     if (-e $jsub_file_template) {
 	open(JSUB_TEMPLATE, "$jsub_file_template");
 	while ($line = <JSUB_TEMPLATE>) {
+	    if ($line =~ /INPUT_FILES:/) {
+		$line = "INPUT_FILES: " . $inputFilePattern . "\n";
+		$line =~ s/\*/{run_number}/;
+		$line =~ s/\*/{file_number}/;
+	    }
 	    $line =~ s/{project}/$project/g;
 	    $line =~ s/{run_number}/$run/g;
 	    $line =~ s/{file_number}/$file/g;
@@ -581,6 +587,10 @@ sub read_project_parameters {
     $ref = XMLin("${project}.jproj", KeyAttr=>[]);
     # dump it to the screen for debugging only
     print Dumper($ref);
+    $runDigits = $ref->{digits}->{run};
+    $fileDigits = $ref->{digits}->{file};
+    $run_format = "%0${runDigits}d";
+    $file_format = "%0${fileDigits}d";
     $inputFilePattern = $ref->{inputFilePattern};
     print "inputFilePattern = $inputFilePattern\n";
     $outputFileDir = $ref->{outputFileDir};
