@@ -213,8 +213,7 @@ sub update {
 }
 
 sub update_output {
-    $output_dir = $ARGV[2];
-    $pattern_run_only = $ARGV[3];
+    $pattern_run_only = $ARGV[2];
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
@@ -230,7 +229,7 @@ sub update_output {
 	} else {
 	    $file_pattern = $run . '_' . $file;
 	}
-	open(FIND, "find $output_dir -maxdepth 1 -name \*$file_pattern\* |");
+	open(FIND, "find $outputFileDir -maxdepth 1 -name \*$file_pattern\* |");
 	$nfile = 0;
 	while ($filefound = <FIND>) {
 	    $filename = $filefound; # for use outside loop
@@ -430,12 +429,10 @@ sub unsubmit {
 }
 
 sub jput {
-    $output_dir = $ARGV[2];
-    $silo_dir = $ARGV[3];
-    $pattern_run_only = $ARGV[4];
-    $nfile_max = $ARGV[5];
-    if ($silo_dir !~ /\/$/) {
-	$silo_dir .= '/';     # add trailing "/"
+    $pattern_run_only = $ARGV[2];
+    $nfile_max = $ARGV[3];
+    if ($tapeFileDir !~ /\/$/) {
+	$tapeFileDir .= '/';     # add trailing "/"
     }
     if ($pattern_run_only) {
 	print "file pattern will include only run number\n";
@@ -451,7 +448,7 @@ sub jput {
 	    if ($nfile != 0) {
 		jput_it();
 	    }
-	    $command = "cd $output_dir ; jput";
+	    $command = "cd $outputFileDir ; jput";
 	}
 	$run = sprintf("%05d", $column[0]);
 	$file = sprintf("%07d", $column[1]);
@@ -465,19 +462,21 @@ sub jput {
 	make_query($dbh_db, \$sth2);
 	$nfile++;
     }
-    jput_it();
+    if ($nfile > 0) {
+	jput_it();
+    }
     print "jput $nfile files\n";
 }
 
 sub jput_it {
 # called from multiple places, whenever $sql is ready to finish and ship
-    $command .= " $silo_dir";
+    $command .= " $tapeFileDir";
+    print "jproj.pl jput: command = $command\n";
     system $command;
 }
 
 sub jcache {
-    $silo_dir = $ARGV[2];
-    $pattern_run_only = $ARGV[3];
+    $pattern_run_only = $ARGV[2];
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
@@ -498,7 +497,7 @@ sub jcache {
 	} else {
 	    $file_pattern = $run . '_' . $file;
 	}
-	$command .= " $silo_dir/\*$file_pattern\*";
+	$command .= " $tapeFileDir/\*$file_pattern\*";
 	$sql = "UPDATE $project SET jcache_submitted = 1 WHERE run = $run AND file = $file";
 	make_query($dbh_db, \$sth2);
 	$nfile++;
@@ -584,6 +583,11 @@ sub read_project_parameters {
     print Dumper($ref);
     $inputFilePattern = $ref->{inputFilePattern};
     print "inputFilePattern = $inputFilePattern\n";
+    $outputFileDir = $ref->{outputFileDir};
+    print "outputFileDir = $outputFileDir\n";
+    $tapeFileDir = $ref->{tapeFileDir};
+    print "tapeFileDir = $tapeFileDir\n";
+    return;
 }
 
 sub make_query {    
@@ -624,8 +628,7 @@ update
 add : add jobs to the workflow
 
 update_output
-    arg1: output link directory
-    arg2: if present and non-zero, use only run number in file pattern search
+    arg1: if present and non-zero, use only run number in file pattern search
 
 update_silo
     arg1: mss directory
@@ -646,13 +649,10 @@ unsubmit
     arg2: file number
 
 jput
-    arg1: output link directory
-    arg2: mss directory
-    arg3: if present and non-zero, use only run number in file pattern for jput
-    arg4: if present and non-zero, jput at most this many files
+    arg1: if present and non-zero, use only run number in file pattern for jput
+    arg2: if present and non-zero, jput at most this many files
 
 jcache
-    arg1: mss directory
-    arg2: if present and non-zero, use only run number in file pattern for jcache
+    arg1: if present and non-zero, use only run number in file pattern for jcache
 EOM
 }
