@@ -10,9 +10,6 @@ echo ==setting up environment==
 source setup_jlab.csh
 echo ==environment==
 printenv
-echo ==copy logs==
-./loop.csh 600 cp job.out /work/halld/data_challenge/03_2_sim/logs/${PBS_JOBNAME}.${AUGER_ID}.out >& /dev/null &
-./loop.csh 600 cp job.err /work/halld/data_challenge/03_2_sim/logs/${PBS_JOBNAME}.${AUGER_ID}.err >& /dev/null &
 echo ==run bggen==
 cp -v run.ffr.template run.ffr
 gsr.pl '<random_number_seed>' $file run.ffr
