@@ -1,1 +1,4 @@
-/mss/halld/halld-scratch/data_challenge/dc_03_sim/smeared4/hdgeant_smeared_*_*.evio
+<jproj>
+<digits run="6" file="7"/>
+<inputFilePattern>/mss/halld/halld-scratch/data_challenge/dc_03_2_sim/smeared_test/hdgeant_smeared_*_*.evio</inputFilePattern>
+</jproj>
