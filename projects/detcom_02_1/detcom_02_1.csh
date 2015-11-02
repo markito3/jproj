@@ -20,7 +20,7 @@ set number_of_events_max = 10000000 # will be used for em background only runs
 #
 # set seed offset
 #
-@ seed_offset = 0
+@ seed_offset = 60007
 #
 # set flag based on run number
 #
