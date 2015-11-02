@@ -7,7 +7,7 @@ echo ==start job==
 date
 echo project $project run $run file $file
 #
-cp -pv /work/halld/home/sdobbs/mc_sim1/conditions/* .
+cp -pv /group/halld/www/halldweb/html/gluex_simulations/sim1/conditions/* .
 setenv PATH `pwd`:$PATH # put current directory into the path
 echo ==environment==
 source setup_jlab.csh
