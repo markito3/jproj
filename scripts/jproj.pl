@@ -23,7 +23,7 @@ read_project_parameters();
 $host = 'hallddb.jlab.org';
 $user = 'farmer';
 $password = '';
-$database = 'farming';
+$database = 'farming2';
 
 print "Connecting to $user\@$host, using $database.\n";
 $dbh_db = DBI->connect("DBI:mysql:$database:$host", $user, $password);
