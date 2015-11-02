@@ -25,10 +25,10 @@ $user = 'farmer';
 $password = '';
 $database = 'farming2';
 
-print "Connecting to $user\@$host, using $database.\n";
+#print "Connecting to $user\@$host, using $database.\n";
 $dbh_db = DBI->connect("DBI:mysql:$database:$host", $user, $password);
 if (defined $dbh_db) {
-    print "Connection successful\n";
+    #print "Connection successful\n";
 } else {
     die "Could not connect to the database server, exiting.\n";
 }
@@ -583,20 +583,23 @@ sub status {
 }
 
 sub read_project_parameters {
+    $debug_xml = 0;
     # slurp in the xml file
     $ref = XMLin("${project}.jproj", KeyAttr=>[]);
     # dump it to the screen for debugging only
-    print Dumper($ref);
+    if ($debug_xml) {print Dumper($ref);}
     $runDigits = $ref->{digits}->{run};
     $fileDigits = $ref->{digits}->{file};
     $run_format = "%0${runDigits}d";
     $file_format = "%0${fileDigits}d";
     $inputFilePattern = $ref->{inputFilePattern};
-    print "inputFilePattern = $inputFilePattern\n";
     $outputFileDir = $ref->{outputFileDir};
-    print "outputFileDir = $outputFileDir\n";
     $tapeFileDir = $ref->{tapeFileDir};
-    print "tapeFileDir = $tapeFileDir\n";
+    if ($debug_xml) {
+	print "inputFilePattern = $inputFilePattern\n";
+	print "outputFileDir = $outputFileDir\n";
+	print "tapeFileDir = $tapeFileDir\n";
+    }
     return;
 }
 
