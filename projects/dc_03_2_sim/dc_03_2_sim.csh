@@ -3,8 +3,6 @@ set project=$1
 set run=$2
 set file=$3
 echo processing project $project run $run file $file
-set run6=`echo $run | perl -n -e 'printf "%06d", $_;'`
-set file7=`echo $file | perl -n -e 'printf "%07d", $_;'`
 cp -v /group/halld/www/halldweb/html/data_challenge/03_2/conditions/* .
 echo ==setting up environment==
 source setup_jlab.csh
@@ -33,11 +31,12 @@ echo ==ls -l after mcsmear==
 ls -l
 echo ==run hd_ana, translate to evio format==
 hd_ana -PJANA:BATCH_MODE=1 -PPLUGINS=rawevent hdgeant_smeared.hddm
+cp -pv hdgeant_smeared.hddm /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file}.hddm
 rm -v hdgeant_smeared.hddm
 echo ==ls -l after hd_ana==
 ls -l
 echo ==copy smeared==
 mkdir -p /volatile/halld/data_challenge/$project/smeared
-cp -pv rawevent_$run6.evio /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run6}_${file7}.evio
+cp -pv rawevent_$run.evio /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file}.evio
 echo ==exit==
 exit
