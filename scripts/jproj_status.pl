@@ -4,7 +4,7 @@ use CGI;                             # load CGI routines
 use DBI;
 $user = "farmer";
 $password = "";
-$database = "farming";
+$database = "farming2";
 $hostname = "hallddb.jlab.org";
 $method = "GET";
 

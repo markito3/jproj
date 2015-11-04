@@ -3,6 +3,8 @@
 # load perl modules
 
 use DBI;
+use XML::Simple;
+use Data::Dumper;
 
 # output file directory
 $jsub_file_path = "/tmp";
@@ -15,16 +17,18 @@ if ($#ARGV == -1) {
 $project = $ARGV[0];
 $action = $ARGV[1];
 
+read_project_parameters();
+
 # connect to the database
 $host = 'hallddb.jlab.org';
 $user = 'farmer';
 $password = '';
-$database = 'farming';
+$database = 'farming2';
 
-print "Connecting to $user\@$host, using $database.\n";
+#print "Connecting to $user\@$host, using $database.\n";
 $dbh_db = DBI->connect("DBI:mysql:$database:$host", $user, $password);
 if (defined $dbh_db) {
-    print "Connection successful\n";
+    #print "Connection successful\n";
 } else {
     die "Could not connect to the database server, exiting.\n";
 }
@@ -33,6 +37,10 @@ if ($action eq 'create') {
     create();
 } elsif ($action eq 'populate') {
     populate();
+} elsif ($action eq 'add') {
+    add();
+} elsif ($action eq 'drop') {
+    drop();
 } elsif ($action eq 'update') {
     update();
 } elsif ($action eq 'update_output') {
@@ -41,14 +49,18 @@ if ($action eq 'create') {
     update_silo();
 } elsif ($action eq 'update_cache') {
     update_cache();
-} elsif ($action eq 'submit') {
-    submit();
+} elsif ($action eq 'run') {
+    run();
+} elsif ($action eq 'pause') {
+    pause();
 } elsif ($action eq 'unsubmit') {
     unsubmit();
 } elsif ($action eq 'jput') {
     jput();
 } elsif ($action eq 'jcache') {
     jcache();
+} elsif ($action eq 'status') {
+    status();
 } else {
     print "no valid action requested\n";
 }
@@ -65,7 +77,8 @@ sub create {
 "CREATE TABLE $project (
   run int(11) NOT NULL default '0',
   file int(11) NOT NULL default '0',
-  submitted tinyint(4) NOT NULL default '0',
+  jobId int(11),
+  added tinyint(4) NOT NULL default '0',
   output tinyint(4) NOT NULL default '0',
   jput_submitted tinyint(4) NOT NULL default '0',
   silo tinyint(4) NOT NULL default '0',
@@ -77,9 +90,7 @@ sub create {
     make_query($dbh_db, \$sth);
     $sql = 
 "CREATE TABLE ${project}Job (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `run` int(11) DEFAULT NULL,
-  `file` int(11) DEFAULT NULL,
+  `augerId` int(11) DEFAULT NULL,
   `jobId` int(11) DEFAULT NULL,
   `timeChange` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `username` varchar(64) DEFAULT NULL,
@@ -107,10 +118,14 @@ sub create {
   `script` varchar(1024) DEFAULT NULL,
   `files` varchar(1024) DEFAULT NULL,
   `error` varchar(1024) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`augerId`)
 ) ENGINE=MyISAM;";
 
     make_query($dbh_db, \$sth);
+# create new swif workflow
+    $command = "swif create -workflow $project";
+    print "jproj.pl create: command = $command\n";
+    system $command;
 }
 
 sub populate {
@@ -121,12 +136,16 @@ sub populate {
     make_query($dbh_db, \$sth);
     @row = $sth->fetchrow_array;
     $file_number_found = $row[0];
-    print "max of files found = $file_number_found\n";
+    if ($file_number_found) {
+	print "populate: max file number found = $file_number_found\n";
+    } else {
+	print "populate: no files found\n";
+    }
     if ($number_of_files ne '') {
-	print "populate: $number_of_files files requested\n";
+	print "populate: $number_of_files additional files requested\n";
 	for ($findex = $file_number_found + 1; $findex <= $file_number_found + $number_of_files; $findex++) {
 	    $file_number = $findex;
-	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, submitted=0";
+	    $sql = "INSERT INTO $project SET run = $run_number, file = $file_number, added=0";
 	    make_query($dbh_db, \$sth);
 	}
     } else {
@@ -136,15 +155,14 @@ sub populate {
 
 sub update {
 
-    open(CONFIG, "${project}.jproj");
     $input_string = <CONFIG>;
-    chomp $input_string;
-#    print "$input_string\n";
-    @token = split(/\//, $input_string);
+    chomp $inputFilePattern;
+#    print "$inputFilePattern\n";
+    @token = split(/\//, $inputFilePattern);
     $name = $token[$#token];
     $name_escaped = $name;
     $name_escaped =~ s/\*/\\\*/g;
-    @token2 = split(/$name_escaped/, $input_string);
+    @token2 = split(/$name_escaped/, $inputFilePattern);
     $dir = @token2[0];
 #    print "$dir $name\n";
     @token3 = split(/\*/, $name);
@@ -183,7 +201,7 @@ sub update {
 	    }
 	    if ($nrow == 0) {
 		print "new run: $run, file: $file_number\n";
-		$sql = "INSERT INTO $project SET run=$run, file = $file_number, submitted=0";
+		$sql = "INSERT INTO $project SET run=$run, file = $file_number, added=0";
 		make_query($dbh_db, \$sth);
 	    } elsif ($nrow > 1) {
 		die "error too many entries for run $run"; 
@@ -195,24 +213,24 @@ sub update {
 }
 
 sub update_output {
-    $output_dir = $ARGV[2];
-    $pattern_run_only = $ARGV[3];
+    $pattern_run_only = $ARGV[2];
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 0 order by run, file";
+    $sql = "SELECT run, file FROM $project WHERE added = 1 AND output = 0 order by run, file";
     make_query($dbh_db, \$sth);
     $nprocessed = 0;
     $nfound = 0;
+    $rf_separator = '_';
     while (@row = $sth->fetchrow_array) {
-	$run = sprintf("%05d", $row[0]);
-	$file = sprintf("%07d", $row[1]);
+	$run = sprintf($run_format, $row[0]);
+	$file = sprintf($file_format, $row[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
-	    $file_pattern = $run . '_' . $file;
+	    $file_pattern = $run . $rf_separator . $file;
 	}
-	open(FIND, "find $output_dir -maxdepth 1 -name \*$file_pattern\* |");
+	open(FIND, "find $outputFileDir -maxdepth 1 -name \*$file_pattern\* |");
 	$nfile = 0;
 	while ($filefound = <FIND>) {
 	    $filename = $filefound; # for use outside loop
@@ -332,7 +350,7 @@ sub update_cache {
     print "last pattern = $file_pattern, processed = $nprocessed, found = $nfound\n";
 }
 
-sub submit {
+sub add {
     $limit = $ARGV[2];
     $run_choice = $ARGV[3];
     if ($limit == 0 or $limit eq '') {
@@ -341,9 +359,9 @@ sub submit {
     print "limit = $limit\n";
 
     if ($run_choice) {
-	$sql = "SELECT run, file FROM $project WHERE submitted=0 AND run=$run_choice limit $limit";
+	$sql = "SELECT run, file FROM $project WHERE added=0 AND run=$run_choice limit $limit";
     } else {
-	$sql = "SELECT run, file FROM $project WHERE submitted=0 limit $limit";
+	$sql = "SELECT run, file FROM $project WHERE added=0 limit $limit";
     }
     make_query($dbh_db, \$sth);
     $i = 0;
@@ -352,30 +370,34 @@ sub submit {
 	$file_array[$i] = $row[1];
 	$i++;
     }
-    for ($j = 0; $j < $i; $j++) {
+    $j = 0;
+    while ($j < $i && $j < $limit) {
 	$run_this = $run_array[$j];
 	$file_this = $file_array[$j];
-	printf ">>>submitting run $run_this file $file_this<<<\n";
-	$jobIndex = submit_one($run_this, $file_this);
-	#print "DEBUG: jobindex returned from submit_one = $jobIndex\n";
-	$sql = "UPDATE $project SET submitted=1 WHERE run=$run_this and file=$file_this";
+	printf ">>>adding run $run_this file $file_this<<<\n";
+	$jobId = add_one($run_this, $file_this);
+	$sql = "UPDATE $project SET jobId = $jobId, added = 1 where run=$run_this AND file=$file_this";
 	make_query($dbh_db, \$sth);
-	$sql = "INSERT ${project}Job SET run=$run_this, file=$file_this, jobId = $jobIndex";
-	make_query($dbh_db, \$sth);
+	$j++;
     }
 }
 
-sub submit_one {
+sub add_one {
     my($run_in, $file_in) = @_;
-    my $jobIndex = "job index undefined";
-    $run = sprintf("%05d", $run_in);
-    $file = sprintf("%07d", $file_in);
+    my $job_id = "job index undefined";
+    $run = sprintf($run_format, $run_in);
+    $file = sprintf($file_format, $file_in);
     $jsub_file = "$jsub_file_path/${project}_${run}_${file}.jsub";
     open(JSUB, ">$jsub_file");
     $jsub_file_template = "$project.jsub";
     if (-e $jsub_file_template) {
 	open(JSUB_TEMPLATE, "$jsub_file_template");
 	while ($line = <JSUB_TEMPLATE>) {
+	    if ($line =~ /INPUT_FILES:/) {
+		$line = "INPUT_FILES: " . $inputFilePattern . "\n";
+		$line =~ s/\*/{run_number}/;
+		$line =~ s/\*/{file_number}/;
+	    }
 	    $line =~ s/{project}/$project/g;
 	    $line =~ s/{run_number}/$run/g;
 	    $line =~ s/{file_number}/$file/g;
@@ -383,47 +405,45 @@ sub submit_one {
 	}
 	close(JSUB);
 	close(JSUB_TEMPLATE);
-	$submit_command = "jsub $jsub_file | perl -n -e 'if(/jsub/) {print;}' | get_job_index.pl";
-	$jobIndex = `$submit_command`;
-	chomp $jobIndex;
-	#print "DEBUG jobIndex = $jobIndex\n";
+	$command_swif = "swif add-jsub -workflow $project -script $jsub_file";
+	$command = "$command_swif | perl -n -e \'if(/id = /){split \" = \"; print \$_\[1\];}\'";
+	#print "jproj.pl add: command = $command_swif\n";
+	$job_id = `$command`;
+	#print "job_id = $job_id";
     } else {
 	die "error: jsub file template $jsub_file_template does not exist";
     }
-    #print "DEBUG right before return, jobIndex = $jobIndex\n";
-    return $jobIndex;
+    return $job_id;
 }
 
 sub unsubmit {
     $run = $ARGV[2];
     $file = $ARGV[3];
     print "run = $run, file = $file\n";
-    $sql = "SELECT submitted FROM $project WHERE run = $run AND file = $file";
+    $sql = "SELECT added FROM $project WHERE run = $run AND file = $file";
     make_query($dbh_db, \$sth);
-    $submitted = 0;
+    $added = 0;
     $nrow = 0;
     while (@column = $sth->fetchrow_array) {
 	$nrow++;
-	$submitted = $column[0];
+	$added = $column[0];
     }
     if ($nrow > 1) {die "more than one entry for run/file";}
-    if ($submitted != 1) {die "job never submitted or run/file does not exist";}
-    $sql = "UPDATE $project SET submitted = 0 WHERE run = $run AND file = $file";
+    if ($added != 1) {die "job never added or run/file does not exist";}
+    $sql = "UPDATE $project SET added = 0 WHERE run = $run AND file = $file";
     make_query($dbh_db, \$sth);
 }
 
 sub jput {
-    $output_dir = $ARGV[2];
-    $silo_dir = $ARGV[3];
-    $pattern_run_only = $ARGV[4];
-    $nfile_max = $ARGV[5];
-    if ($silo_dir !~ /\/$/) {
-	$silo_dir .= '/';     # add trailing "/"
+    $pattern_run_only = $ARGV[2];
+    $nfile_max = $ARGV[3];
+    if ($tapeFileDir !~ /\/$/) {
+	$tapeFileDir .= '/';     # add trailing "/"
     }
     if ($pattern_run_only) {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND output = 1 AND jput_submitted = 0 order by run, file";
+    $sql = "SELECT run, file FROM $project WHERE added = 1 AND output = 1 AND jput_submitted = 0 order by run, file";
     if ($nfile_max) {
 	$sql .= " limit $nfile_max"
     }
@@ -434,7 +454,7 @@ sub jput {
 	    if ($nfile != 0) {
 		jput_it();
 	    }
-	    $command = "cd $output_dir ; jput";
+	    $command = "cd $outputFileDir ; jput";
 	}
 	$run = sprintf("%05d", $column[0]);
 	$file = sprintf("%07d", $column[1]);
@@ -448,23 +468,25 @@ sub jput {
 	make_query($dbh_db, \$sth2);
 	$nfile++;
     }
-    jput_it();
+    if ($nfile > 0) {
+	jput_it();
+    }
     print "jput $nfile files\n";
 }
 
 sub jput_it {
 # called from multiple places, whenever $sql is ready to finish and ship
-    $command .= " $silo_dir";
+    $command .= " $tapeFileDir";
+    print "jproj.pl jput: command = $command\n";
     system $command;
 }
 
 sub jcache {
-    $silo_dir = $ARGV[2];
-    $pattern_run_only = $ARGV[3];
+    $pattern_run_only = $ARGV[2];
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
-    $sql = "SELECT run, file FROM $project WHERE submitted = 1 AND silo = 1 AND jcache_submitted = 0";
+    $sql = "SELECT run, file FROM $project WHERE added = 1 AND silo = 1 AND jcache_submitted = 0";
     make_query($dbh_db, \$sth);
     $nfile = 0;
     while (@column = $sth->fetchrow_array) {
@@ -481,7 +503,7 @@ sub jcache {
 	} else {
 	    $file_pattern = $run . '_' . $file;
 	}
-	$command .= " $silo_dir/\*$file_pattern\*";
+	$command .= " $tapeFileDir/\*$file_pattern\*";
 	$sql = "UPDATE $project SET jcache_submitted = 1 WHERE run = $run AND file = $file";
 	make_query($dbh_db, \$sth2);
 	$nfile++;
@@ -491,6 +513,94 @@ sub jcache {
 
 sub jcache_it {
     system $command;
+}
+
+sub drop {
+    $sql = "drop table $project, ${project}Job";
+    make_query($dbh_db, \$sth);
+    system "swif cancel $project";
+}
+
+sub run {
+    $job_limit = $ARGV[2];
+    $command = "swif run $project";
+    if ($job_limit) {
+	$command = $command . " -joblimit $job_limit";
+    }
+    print "jproj.pl info: $command\n";
+    system $command;
+}
+
+sub pause {
+    $command = "swif pause $project";
+    print "jproj.pl info: $command\n";
+    system $command;
+}
+
+sub status {
+
+    $sql = "select count(*) from $project;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "total = $row[0]\n";
+
+    $sql = "select count(*) from $project where added = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "added = $row[0]\n";
+
+    $sql = "select count(*) from $project where output = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "output = $row[0]\n";
+
+    $sql = "select count(*) from $project where jput_submitted = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "jput_submitted = $row[0]\n";
+
+    $sql = "select count(*) from $project where silo = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "silo = $row[0]\n";
+
+    $sql = "select count(*) from $project where jcache_submitted = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "jcache_submitted = $row[0]\n";
+
+    $sql = "select count(*) from $project where cache = 1;";
+    make_query($dbh_db, \$sth);
+    @row = $sth->fetchrow_array;
+    print "cache = $row[0]\n";
+
+    $sth->finish();
+
+    $command = "swif status $project";
+    print "jproj.pl info: $command\n";
+    system $command;
+
+}
+
+sub read_project_parameters {
+    $debug_xml = 0;
+    # slurp in the xml file
+    $ref = XMLin("${project}.jproj", KeyAttr=>[]);
+    # dump it to the screen for debugging only
+    if ($debug_xml) {print Dumper($ref);}
+    $runDigits = $ref->{digits}->{run};
+    $fileDigits = $ref->{digits}->{file};
+    $run_format = "%0${runDigits}d";
+    $file_format = "%0${fileDigits}d";
+    $inputFilePattern = $ref->{inputFilePattern};
+    $outputFileDir = $ref->{outputFileDir};
+    $tapeFileDir = $ref->{tapeFileDir};
+    if ($debug_xml) {
+	print "inputFilePattern = $inputFilePattern\n";
+	print "outputFileDir = $outputFileDir\n";
+	print "tapeFileDir = $tapeFileDir\n";
+    }
+    return;
 }
 
 sub make_query {    
@@ -528,9 +638,10 @@ populate
 update
     arg1: file number to use; if omitted all file numbers will be used
 
+add : add jobs to the workflow
+
 update_output
-    arg1: output link directory
-    arg2: if present and non-zero, use only run number in file pattern search
+    arg1: if present and non-zero, use only run number in file pattern search
 
 update_silo
     arg1: mss directory
@@ -540,22 +651,21 @@ update_cache
     arg1: cache directory
     arg2: if present and non-zero, use only run number in file pattern search
 
-submit
-    arg1: limit on number of submissions
-    arg2: run choice, submit only this run
+run : run the workflow
+    arg1: if present and non-zero, sets job limit, number of jobs to attempt
+          before pausing
+
+pause : pause the workflow
 
 unsubmit
     arg1: run number
     arg2: file number
 
 jput
-    arg1: output link directory
-    arg2: mss directory
-    arg3: if present and non-zero, use only run number in file pattern for jput
-    arg4: if present and non-zero, jput at most this many files
+    arg1: if present and non-zero, use only run number in file pattern for jput
+    arg2: if present and non-zero, jput at most this many files
 
 jcache
-    arg1: mss directory
-    arg2: if present and non-zero, use only run number in file pattern for jcache
+    arg1: if present and non-zero, use only run number in file pattern for jcache
 EOM
 }
