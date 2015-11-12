@@ -65,7 +65,7 @@ if ($action eq 'create') {
     print "no valid action requested\n";
 }
 
-print "disconnecting from server\n";
+#print "disconnecting from server\n";
 $rc = $dbh_db->disconnect;
 
 sub create {
