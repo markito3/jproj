@@ -34,9 +34,9 @@ echo $command
 $command
 echo -=-ls -lt after mcsmear-=-
 ls -lt
-#echo -=-copy smeared-=-
-#mkdir -p /volatile/halld/data_challenge/$project/smeared
-#cp -pv hdgeant_smeared.hddm /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file}.hddm
+echo -=-copy smeared-=-
+mkdir -p /volatile/halld/data_challenge/$project/hddm
+cp -pv hdgeant_smeared.hddm /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file}.hddm
 rm -v hdgeant.hddm
 echo -=-run hd_ana, translate to evio format-=-
 set command="hd_ana -PJANA:BATCH_MODE=1 -PPLUGINS=rawevent -PRAWEVENT:NO_PEDESTAL=0 -PRAWEVENT:NO_RANDOM_PEDESTAL=1 hdgeant_smeared.hddm"
@@ -46,7 +46,7 @@ rm -v hdgeant_smeared.hddm
 echo -=-ls -lt after hd_ana-=-
 ls -lt
 echo -=-copy evio-=-
-mkdir -p /volatile/halld/data_challenge/$project/smeared
+mkdir -p /volatile/halld/data_challenge/$project/evio
 set run6=`echo $run | perl -n -e 'printf "%06d", $_;'` # needed for hd_ana output
 cp -pv rawevent_$run6.evio /volatile/halld/data_challenge/$project/smeared/hdgeant_smeared_${run}_${file}.evio
 echo -=-exit-=-
