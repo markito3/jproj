@@ -72,13 +72,19 @@ $command
 echo -=-ls -lt after hdgeant-=-
 ls -lt
 echo -=-run mcsmear-=-
-set command = "mcsmear -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 hdgeant.hddm"
+set command = "mcsmear -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1"
+set command = "$command hdgeant.hddm"
 echo command = $command
 $command
 echo ls -lt after mcsmear
 ls -lt
 echo -=-run hd_root-=-
-set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1 -PPLUGINS=danarest,monitoring_hists hdgeant_smeared.hddm"
+set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1"
+set command = "${command} -PPLUGINS=danarest,TAGH_online,BCAL_online,"
+set command = "${command}FCAL_online,ST_online_tracking,TOF_online,"
+set command = "${command}monitoring_hists,BCAL_Eff,p2pi_hists,p3pi_hists,"
+set command = "${command}BCAL_inv_mass,trackeff_missing,TRIG_online"
+set command = "${command} hdgeant_smeared.hddm"
 echo command = $command
 $command
 echo -=-ls -lt after hd_root-=-
