@@ -1,4 +1,5 @@
 <jproj>
 <digits run="6" file="7"/>
-<inputFilePattern>/mss/halld/halld-scratch/data_challenge/dc_03_2_sim/smeared_test/hdgeant_smeared_*_*.evio</inputFilePattern>
+<inputFilePattern>/mss/halld/halld-scratch/data_challenge/dc_03_2_sim/smeared/hdgeant_smeared_*_*.evio</inputFilePattern>
+<outputFileDir>/volatile/halld/data_challenge/dc_03_2_recon/rest</outputFileDir>
 </jproj>
