@@ -15,7 +15,8 @@ printenv
 #
 # set number of events
 #
-set number_of_events = 25000
+#set number_of_events = 25000
+set number_of_events = 250
 set number_of_events_max = 10000000 # will be used for em background only runs
 #
 # set seed offset
@@ -83,7 +84,7 @@ set command = "hd_root -PJANA:BATCH_MODE=1 -PTHREAD_TIMEOUT=300 -PNTHREADS=1"
 set command = "${command} -PPLUGINS=danarest,TAGH_online,BCAL_online,"
 set command = "${command}FCAL_online,ST_online_tracking,TOF_online,"
 set command = "${command}monitoring_hists,BCAL_Eff,p2pi_hists,p3pi_hists,"
-set command = "${command}BCAL_inv_mass,trackeff_missing,TRIG_online"
+set command = "${command}BCAL_inv_mass,trackeff_missing,TRIG_online,TAGM_online"
 set command = "${command} hdgeant_smeared.hddm"
 echo command = $command
 $command
