@@ -45,8 +45,7 @@ ls -lt
 echo -=-run hdgeant-=-
 rm -f control.in
 cp -v control.in_9001 control.in
-gsr.pl '<number_of_events_max>' $number_of_events_max control.in # TRIG card
-echo -=-control.in-=-
+echo -=-control.in-=- 
 perl -n -e 'chomp; if (! /^c/ && $_) {print "$_\n";}' < control.in
 echo -=-=-=-=-=-=-=-=
 set command = hdgeant
