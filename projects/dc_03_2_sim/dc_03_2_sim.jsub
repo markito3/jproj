@@ -3,7 +3,7 @@ JOBNAME: {project}_{run_number}_{file_number}
 TRACK: simulation
 COMMAND: /home/gxproj2/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
-MEMORY: 3000 MB
-TIME: 2800
+MEMORY: 2000 MB
+TIME: 1800
 OS: centos65
-DISK_SPACE: 25 GB
+DISK_SPACE: 45 GB

@@ -1,9 +1,9 @@
 PROJECT: gluex
 JOBNAME: {project}_{run_number}_{file_number}
 TRACK: simulation
-COMMAND: /group/halld/www/halldweb/html/jproj/projects/{project}/{project}.csh
+COMMAND: /home/gxproj4/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
-MEMORY: 2500 MB
+MEMORY: 3800 MB
 TIME: 1800
 OS: centos65
 DISK_SPACE: 4 GB
