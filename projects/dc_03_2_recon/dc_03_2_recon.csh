@@ -9,7 +9,7 @@ source setup_jlab.csh
 echo ==environment==
 printenv
 echo ==analyze the evio file==
-hd_root -PPLUGINS=DAQ,monitoring_hists,danarest -PJANA:BATCH_MODE=1 hdgeant_smeared_${run}_${file}.evio
+hd_root -PPLUGINS=DAQ,monitoring_hists,danarest -PJANA:BATCH_MODE=1 hdgeant_smeared_${run}_${file}.hddm
 mkdir -p /volatile/halld/data_challenge/$project/root
 cp -pv hd_root.root /volatile/halld/data_challenge/$project/root/hd_root_${run}_${file}.root
 mkdir -p /volatile/halld/data_challenge/$project/rest
