@@ -61,6 +61,8 @@ if ($action eq 'create') {
     jcache();
 } elsif ($action eq 'status') {
     status();
+} elsif ($action eq 'update_auger') {
+    update_auger();
 } else {
     print "no valid action requested\n";
 }
@@ -603,6 +605,10 @@ sub read_project_parameters {
     return;
 }
 
+sub update_auger {
+    print "update_auger: dummy routine at present\n";
+}
+
 sub make_query {    
 
     my($dbh, $sth_ref) = @_;
@@ -639,6 +645,8 @@ update
     arg1: file number to use; if omitted all file numbers will be used
 
 add : add jobs to the workflow
+
+update_auger : get auger ids for added jobs
 
 update_output
     arg1: if present and non-zero, use only run number in file pattern search
