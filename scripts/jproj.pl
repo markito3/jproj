@@ -606,7 +606,48 @@ sub read_project_parameters {
 }
 
 sub update_auger {
-    print "update_auger: dummy routine at present\n";
+    $temp_file = "/tmp/jproj_${project}_auger.xml";
+    system("rm -f $temp_file");
+    system("swif status -workflow=$project -jobs -display=xml > $temp_file");
+#    open the file and parse it
+
+    $debug_xml = 0;
+    # slurp in the xml file
+    my $ref = XMLin($temp_file, KeyAttr=>[], ForceArray => ['attempt']);
+    # dump it to the screen for debugging only
+    if ($debug_xml) {print Dumper($ref);}
+
+#    add each entry indiscriminantly and give up if an error occurs because auger id should be a primary key
+    my $jobs = $ref->{jobs}; # hash reference
+    my $job = $jobs->{job}; # array reference
+    if ($debug_xml) {print "jobs = ", $jobs, " job = ", $job, "\n";}
+    my @jobarray = @$job; # array
+    $jobtable = $project . "Job";
+    for ($i = 0; $i <= $#jobarray; $i++) {
+	%thisjobhash = %{$jobarray[$i]};
+	$attempts = $thisjobhash{attempts};
+	$attempt = $attempts->{attempt};
+	my $jobid = $thisjobhash{id};
+	if ($debug_xml) {print "jobarray[$i] = ", $jobarray[$i], " thisjobhash{name} = ", $thisjobhash{name}, " jobid = ", $jobid, " attempts = ", $attempts, " attempt = ", $attempt, "\n";}
+	foreach $this_attempt_element (@$attempt) {
+	    $augerid = $this_attempt_element->{auger_id};
+	    if ($debug_xml) {print "this_attempt_element = ", $this_attempt_element, " augerid = ", $augerid, "\n";}
+	    $sql = "SELECT count(*) from $jobtable where augerId = $augerid;";
+	    make_query($dbh_db, \$sth);
+	    my $count = $sth->fetchrow_array();
+	    if ($debug_xml) {print "count = $count\n";}
+	    $sth->finish;
+	    if (! $count) {
+		print "found new attempt, jobid = ", $jobid, ", augerid = ", $augerid, "\n";
+		$sql = "INSERT into $jobtable set jobId = $jobid, augerId = $augerid;";
+		if ($debug_xml) {print $sql, "\n";}
+		make_query($dbh_db, \$sth);
+	    }
+	}
+    }
+#    my $attempts = $job[0]{attempts}; 
+    $ref=>
+    return;
 }
 
 sub make_query {    
@@ -616,7 +657,7 @@ sub make_query {
         or die "Can't prepare $sql: $dbh->errstr\n";
     
     $rv = $$sth_ref->execute
-        or die "Can't execute the query $sql\n error: $sth->errstr\n";
+	or die "Can't execute the query $sql\n error: $sth->errstr\n";
     
     return 0;
 
