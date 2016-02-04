@@ -1,5 +1,5 @@
 <jproj>
 <digits run="6" file="7"/>
 <outputFileDir>/volatile/halld/data_challenge/dc_03_2_sim/hddm</outputFileDir>
-<tapeFileDir>/mss/halld/data_challenge/dc_03_2_sim/smeared</tapeFileDir>
+<tapeFileDir>/mss/halld/halld-scratch/data_challenge/dc_03_2_sim_2/smeared</tapeFileDir>
 </jproj>
