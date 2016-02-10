@@ -265,7 +265,6 @@ sub update_output {
 }
 
 sub update_silo {
-    $silo_dir = $ARGV[2];
     $pattern_run_only = $ARGV[3];
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
@@ -275,14 +274,14 @@ sub update_silo {
     $nprocessed = 0;
     $nfound = 0;
     while (@row = $sth->fetchrow_array) {
-	$run = sprintf("%05d", $row[0]);
-	$file = sprintf("%07d", $row[1]);
+	$run = sprintf($run_format, $row[0]);
+	$file = sprintf($file_format, $row[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
 	    $file_pattern = $run . '_' . $file;
 	}
-	open(FIND, "find $silo_dir -maxdepth 1 -name \*$file_pattern\* |");
+	open(FIND, "find $tapeFileDir -maxdepth 1 -name \*$file_pattern\* |");
 	$nfile = 0;
 	while ($filefound = <FIND>) {
 	    $filename = $filefound; # for use outside loop
