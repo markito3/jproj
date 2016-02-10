@@ -64,11 +64,13 @@ if ($action eq 'create') {
 } elsif ($action eq 'update_auger') {
     update_auger();
 } else {
-    print "no valid action requested\n";
+    print "jproj error: $action is not a valid action\n";
 }
 
 #print "disconnecting from server\n";
 $rc = $dbh_db->disconnect;
+
+exit;
 
 sub create {
     print "starting create\n";
