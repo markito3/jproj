@@ -56,9 +56,9 @@ print $q->h2($subtitle);
 
 print
     "<table border>\n",
-    "<tr><th>id</th><th>jobId</th><th>run</th><th>file</th><th>timeSubmitted</th><th>timeActive</th><th>timeComplete</th><th>cput</th><th>hostname</th><th>status</th><th>result</th></tr>\n";
+    "<tr><th>run</th><th>file</th><th>jobId</th><th>augerId</th><th>timeSubmitted</th><th>timeActive</th><th>timeComplete</th><th>cput</th><th>hostname</th><th>status</th><th>result</th></tr>\n";
 
-$sql = "select id, jobId, run, file, timeSubmitted, timeActive, timeComplete, cput, hostname, status, result from $jobtable order by run, file, jobId";
+$sql = "select run, file, $project.jobId, augerId, timeSubmitted, timeActive, timeComplete, cput, hostname, status, result from $project, $jobtable where $project.jobId = $jobtable.jobId order by run, file, $project.jobId, augerId";
 make_query($dbh, \$sth);
 while (@row = $sth->fetchrow_array) {
     print "<tr>";
