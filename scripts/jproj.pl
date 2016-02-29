@@ -409,10 +409,10 @@ sub add_one {
 	close(JSUB);
 	close(JSUB_TEMPLATE);
 	$command_swif = "swif add-jsub -workflow $project -script $jsub_file";
-	$command = "$command_swif | perl -n -e \'if(/id = /){split \" = \"; print \$_\[1\];}\'";
+	$command = "$command_swif | perl -n -e \'if (/id\\s+= /) {split \" = \"; print \$_\[1\];}\'";
 	#print "jproj.pl add: command = $command_swif\n";
 	$job_id = `$command`;
-	#print "job_id = $job_id";
+	#print "job_id = $job_id\n";
     } else {
 	die "error: jsub file template $jsub_file_template does not exist";
     }
