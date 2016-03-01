@@ -3,4 +3,5 @@
 <digits run="6" file="7"/>
 <outputFileDir>/volatile/halld/sim1/rest</outputFileDir>
 <logFileDir>/work/halld/gluex_simulations/sim1/logs</logFileDir>
+<tapeFileDir>/mss/halld/gluex_simulations/sim1/rest</tapeFileDir>
 </jproj>
