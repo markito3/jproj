@@ -309,8 +309,7 @@ sub update_silo {
 }
 
 sub update_cache {
-    $cache_dir = $ARGV[2];
-    $pattern_run_only = $ARGV[3];
+    $pattern_run_only = $ARGV[2];
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
@@ -318,6 +317,7 @@ sub update_cache {
     make_query($dbh_db, \$sth);
     $nprocessed = 0;
     $nfound = 0;
+    $cache_dir = "/cache" . $tapeFileDir;
     while (@row = $sth->fetchrow_array) {
 	$run = sprintf("%05d", $row[0]);
 	$file = sprintf("%07d", $row[1]);
@@ -698,8 +698,7 @@ update_silo
     arg2: if present and non-zero, use only run number in file pattern search
 
 update_cache
-    arg1: cache directory
-    arg2: if present and non-zero, use only run number in file pattern search
+    arg1: if present and non-zero, use only run number in file pattern search
 
 run : run the workflow
     arg1: if present and non-zero, sets job limit, number of jobs to attempt
