@@ -1,0 +1,9 @@
+PROJECT: gluex
+JOBNAME: {project}_{run_number}_{file_number}
+TRACK: simulation
+COMMAND: /home/gxproj4/jproj/projects/{project}/{project}.csh
+OPTIONS: {project} {run_number} {file_number}
+MEMORY: 3800 MB
+TIME: 2100
+OS: centos65
+DISK_SPACE: 4 GB
