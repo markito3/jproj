@@ -7,7 +7,7 @@ echo -=-start job-=-
 date
 echo project $project run $run file $file
 #
-cp -pv /group/halld/www/halldweb/html/gluex_simulations/sim1.1/conditions/* .
+cp -pv /group/halld/www/halldweb/html/gluex_simulations/sim1.1/* .
 setenv PATH `pwd`:$PATH # put current directory into the path
 echo -=-environment-=-
 source setup_jlab.csh
@@ -15,7 +15,8 @@ printenv
 #
 # set number of events
 #
-set number_of_events = 25000
+#set number_of_events = 25000
+set number_of_events = 250
 #
 # set seed offset
 #
