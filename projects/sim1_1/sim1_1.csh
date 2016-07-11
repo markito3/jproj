@@ -7,7 +7,8 @@ echo -=-start job-=-
 date
 echo project $project run $run file $file
 #
-cp -pv /group/halld/www/halldweb/html/gluex_simulations/sim1.1/* .
+#cp -pv /group/halld/www/halldweb/html/gluex_simulations/sim1.1/* .
+cp -pv /home/gxproj4/gluex_simulations/sim1.1/* .
 setenv PATH `pwd`:$PATH # put current directory into the path
 echo -=-environment-=-
 source setup_jlab.csh
@@ -16,20 +17,20 @@ printenv
 # set number of events
 #
 #set number_of_events = 25000
-set number_of_events = 250
+set number_of_events = 10
 #
-# set seed offset
+# set flags based on run number
 #
-@ seed_offset = 0
-#
-# set flag based on run number
-#
-@ runno = `echo $run | awk '{print $1 + 0}'`
-@ fileno = `echo $file | awk '{print $1 + 0}'`
+set collimator = `rcnd $run collimator_diameter | awk '{print $1}'`
+echo collimator = $collimator
+if ($collimator == "") then
+    echo "no value returned for collimator"
+    exit 1
+endif
 #
 echo -=-run bggen-=-
-cp -v run.ffr.template run.ffr
-@ seed = $fileno + $seed_offset
+cp -v run.ffr.${collimator}_coll.template run.ffr
+set seed = $run$file
 gsr.pl '<random_number_seed>' $seed run.ffr
 gsr.pl '<run_number>' $run run.ffr
 gsr.pl '<number_of_events>' $number_of_events run.ffr
@@ -45,7 +46,7 @@ echo -=-ls -lt after bggen-=-
 ls -lt
 echo -=-run hdgeant-=-
 rm -f control.in
-cp -v control.in_9001 control.in
+cp -v control.in_${collimator}_coll control.in
 echo -=-control.in-=- 
 perl -n -e 'chomp; if (! /^c/ && $_) {print "$_\n";}' < control.in
 echo -=-=-=-=-=-=-=-=
