@@ -159,21 +159,20 @@ sub populate {
 
 sub update {
 
-    $input_string = <CONFIG>;
     chomp $inputFilePattern;
-#    print "$inputFilePattern\n";
+    print "inputFilePattern = $inputFilePattern\n";
     @token = split(/\//, $inputFilePattern);
     $name = $token[$#token];
     $name_escaped = $name;
     $name_escaped =~ s/\*/\\\*/g;
     @token2 = split(/$name_escaped/, $inputFilePattern);
     $dir = @token2[0];
-#    print "$dir $name\n";
+    #print "dir = /$dir/, name = /$name/\n";
     @token3 = split(/\*/, $name);
     $prerun = $token3[0];
     $separator = $token3[1];
     $postfile = $token3[2];
-#    print "$prerun $separator $postfile\n";
+    #print "prerun = /$prerun/, separator =  /$separator/, postfile = /$postfile/\n";
     $file_number_requested = $ARGV[2];
     if ($file_number_requested ne '') {
 	print "file number requested = $file_number_requested\n";
@@ -181,18 +180,18 @@ sub update {
     open(FIND, "find $dir -maxdepth 1 -name \"$name\" |");
     while ($file = <FIND>) {
 	chomp $file;
-#	print "file = $file\n";
+	#print "file = $file\n";
 	@field = split(/$dir/, $file);
 	$this_name = $field[1];
-#	print "this_name = $this_name\n";
+	#print "this_name = $this_name\n";
 	@token4 = split(/$prerun/, $this_name);
 	$this_name = $token4[1];
-#	print "this_name = $this_name\n";
+	#print "this_name = $this_name\n";
 	if ($postfile) {
 	    @token5 = split(/$postfile/, $this_name);
 	    $this_name = @token5[0];
 	}
-#	print "this_name = $this_name\n";
+	#print "this_name = $this_name\n";
 	@token6 = split(/$separator/, $this_name);
 	$run = $token6[0];
 	$file_number = $token6[1];
