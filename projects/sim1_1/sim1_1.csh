@@ -81,19 +81,19 @@ set hd_root_dir=/volatile/halld/gluex_simulations/$project/hd_root
 mkdir -p $hd_root_dir
 cp -v hd_root.root $hd_root_dir/hd_root_${run}_${file}.root
 #
-set tree_bcal_hadronic_eff_dir=/volatile/halld/gluex_simulations/$project/tree_bcal_hadronic_eff_dir
+set tree_bcal_hadronic_eff_dir=/volatile/halld/gluex_simulations/$project/tree_bcal_hadronic_eff
 mkdir -p $tree_bcal_hadronic_eff_dir
 cp -v tree_bcal_hadronic_eff.root $tree_bcal_hadronic_eff_dir/tree_bcal_hadronic_eff_${run}_${file}.root
 #
-set tree_fcal_hadronic_eff_dir=/volatile/halld/gluex_simulations/$project/tree_fcal_hadronic_eff_dir
+set tree_fcal_hadronic_eff_dir=/volatile/halld/gluex_simulations/$project/tree_fcal_hadronic_eff
 mkdir -p $tree_fcal_hadronic_eff_dir
 cp -v tree_fcal_hadronic_eff.root $tree_fcal_hadronic_eff_dir/tree_fcal_hadronic_eff_${run}_${file}.root
 #
-set tree_sc_eff_dir=/volatile/halld/gluex_simulations/$project/tree_sc_eff_dir
+set tree_sc_eff_dir=/volatile/halld/gluex_simulations/$project/tree_sc_eff
 mkdir -p $tree_sc_eff_dir
 cp -v tree_sc_eff.root $tree_sc_eff_dir/tree_sc_eff_${run}_${file}.root
 #
-set tree_tof_eff_dir=/volatile/halld/gluex_simulations/$project/tree_tof_eff_dir
+set tree_tof_eff_dir=/volatile/halld/gluex_simulations/$project/tree_tof_eff
 mkdir -p $tree_tof_eff_dir
 cp -v tree_tof_eff.root $tree_tof_eff_dir/tree_tof_eff_${run}_${file}.root
 #
