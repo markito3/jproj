@@ -586,9 +586,9 @@ sub status {
 }
 
 sub read_project_parameters {
-    $debug_xml = 0;
+    $debug_xml = 1;
     # slurp in the xml file
-    $ref = XMLin("${project}.jproj", KeyAttr=>[]);
+    $ref = XMLin("${project}.jproj", ForceArray=>['fileType']);
     # dump it to the screen for debugging only
     if ($debug_xml) {print Dumper($ref);}
     $runDigits = $ref->{digits}->{run};
