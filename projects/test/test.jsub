@@ -4,6 +4,6 @@ TRACK: debug
 COMMAND: /home/marki/jproj/projects/{project}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
 TIME: 10
-OS: centos62
+OS: centos65
 DISK_SPACE: 1 GB
 MEMORY: 500 MB
