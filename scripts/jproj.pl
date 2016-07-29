@@ -159,21 +159,20 @@ sub populate {
 
 sub update {
 
-    $input_string = <CONFIG>;
     chomp $inputFilePattern;
-#    print "$inputFilePattern\n";
+    print "inputFilePattern = $inputFilePattern\n";
     @token = split(/\//, $inputFilePattern);
     $name = $token[$#token];
     $name_escaped = $name;
     $name_escaped =~ s/\*/\\\*/g;
     @token2 = split(/$name_escaped/, $inputFilePattern);
     $dir = @token2[0];
-#    print "$dir $name\n";
+    #print "dir = /$dir/, name = /$name/\n";
     @token3 = split(/\*/, $name);
     $prerun = $token3[0];
     $separator = $token3[1];
     $postfile = $token3[2];
-#    print "$prerun $separator $postfile\n";
+    #print "prerun = /$prerun/, separator =  /$separator/, postfile = /$postfile/\n";
     $file_number_requested = $ARGV[2];
     if ($file_number_requested ne '') {
 	print "file number requested = $file_number_requested\n";
@@ -181,18 +180,18 @@ sub update {
     open(FIND, "find $dir -maxdepth 1 -name \"$name\" |");
     while ($file = <FIND>) {
 	chomp $file;
-#	print "file = $file\n";
+	#print "file = $file\n";
 	@field = split(/$dir/, $file);
 	$this_name = $field[1];
-#	print "this_name = $this_name\n";
+	#print "this_name = $this_name\n";
 	@token4 = split(/$prerun/, $this_name);
 	$this_name = $token4[1];
-#	print "this_name = $this_name\n";
+	#print "this_name = $this_name\n";
 	if ($postfile) {
 	    @token5 = split(/$postfile/, $this_name);
 	    $this_name = @token5[0];
 	}
-#	print "this_name = $this_name\n";
+	#print "this_name = $this_name\n";
 	@token6 = split(/$separator/, $this_name);
 	$run = $token6[0];
 	$file_number = $token6[1];
@@ -309,8 +308,7 @@ sub update_silo {
 }
 
 sub update_cache {
-    $cache_dir = $ARGV[2];
-    $pattern_run_only = $ARGV[3];
+    $pattern_run_only = $ARGV[2];
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
@@ -318,6 +316,7 @@ sub update_cache {
     make_query($dbh_db, \$sth);
     $nprocessed = 0;
     $nfound = 0;
+    $cache_dir = "/cache" . $tapeFileDir;
     while (@row = $sth->fetchrow_array) {
 	$run = sprintf("%05d", $row[0]);
 	$file = sprintf("%07d", $row[1]);
@@ -608,31 +607,34 @@ sub read_project_parameters {
 
 sub update_auger {
     $temp_file = "/tmp/jproj_${project}_auger.xml";
-    system("rm -f $temp_file");
+    system("rm -fv $temp_file");
     system("swif status -workflow=$project -jobs -display=xml > $temp_file");
 #    open the file and parse it
 
-    $debug_xml = 0;
+    my $debug_xml = 0;
     # slurp in the xml file
     my $ref = XMLin($temp_file, KeyAttr=>[], ForceArray => ['attempt']);
     # dump it to the screen for debugging only
-    if ($debug_xml) {print Dumper($ref);}
-
+    if ($debug_xml) {
+	print "====== begin dump =========\n";
+	print Dumper($ref);
+	print "====== end dump =========\n";
+    }
 #    add each entry indiscriminantly and give up if an error occurs because auger id should be a primary key
     my $jobs = $ref->{jobs}; # hash reference
     my $job = $jobs->{job}; # array reference
-    if ($debug_xml) {print "jobs = ", $jobs, " job = ", $job, "\n";}
     my @jobarray = @$job; # array
+    if ($debug_xml) {my $l = $#jobarray + 1; print "njobs = ", $l, "\n";}
     $jobtable = $project . "Job";
     for ($i = 0; $i <= $#jobarray; $i++) {
 	%thisjobhash = %{$jobarray[$i]};
 	$attempts = $thisjobhash{attempts};
 	$attempt = $attempts->{attempt};
 	my $jobid = $thisjobhash{id};
-	if ($debug_xml) {print "jobarray[$i] = ", $jobarray[$i], " thisjobhash{name} = ", $thisjobhash{name}, " jobid = ", $jobid, " attempts = ", $attempts, " attempt = ", $attempt, "\n";}
+	if ($debug_xml) {print " thisjobhash{name} = ", $thisjobhash{name}, " jobid = ", $jobid, "\n";}
 	foreach $this_attempt_element (@$attempt) {
 	    $augerid = $this_attempt_element->{auger_id};
-	    if ($debug_xml) {print "this_attempt_element = ", $this_attempt_element, " augerid = ", $augerid, "\n";}
+	    if ($debug_xml) {print " attempt augerid = ", $augerid, "\n";}
 	    $sql = "SELECT count(*) from $jobtable where augerId = $augerid;";
 	    make_query($dbh_db, \$sth);
 	    my $count = $sth->fetchrow_array();
@@ -698,8 +700,7 @@ update_silo
     arg2: if present and non-zero, use only run number in file pattern search
 
 update_cache
-    arg1: cache directory
-    arg2: if present and non-zero, use only run number in file pattern search
+    arg1: if present and non-zero, use only run number in file pattern search
 
 run : run the workflow
     arg1: if present and non-zero, sets job limit, number of jobs to attempt

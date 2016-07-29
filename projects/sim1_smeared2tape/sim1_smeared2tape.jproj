@@ -1,0 +1,8 @@
+<jproj>
+<project>sim1</project>
+<digits run="6" file="7"/>
+<inputFilePattern>/volatile/halld/sim1/smeared/hdgeant_smeared_*_*.hddm</inputFilePattern>
+<outputFileDir>/volatile/halld/sim1/smeared</outputFileDir>
+<logFileDir>/work/halld/gluex_simulations/sim1/logs</logFileDir>
+<tapeFileDir>/mss/halld/gluex_simulations/sim1/smeared</tapeFileDir>
+</jproj>
