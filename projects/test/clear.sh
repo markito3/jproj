@@ -3,4 +3,3 @@
 swif cancel test -delete
 mysql -hhallddb -ufarmer farming2 -e "drop table test; drop table testJob"
 jproj.pl test create
-jproj.pl test populate 1234 10
