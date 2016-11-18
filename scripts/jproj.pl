@@ -63,6 +63,8 @@ if ($action eq 'create') {
     status();
 } elsif ($action eq 'update_auger') {
     update_auger();
+} elsif ($action eq 'show_problems') {
+    show_problems();
 } else {
     print "jproj error: $action is not a valid action\n";
 }
@@ -458,8 +460,8 @@ sub jput {
 	    }
 	    $command = "cd $outputFileDir ; jput";
 	}
-	$run = sprintf("%05d", $column[0]);
-	$file = sprintf("%07d", $column[1]);
+	$run = sprintf($run_format, $column[0]);
+	$file = sprintf($file_format, $column[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
@@ -653,6 +655,21 @@ sub update_auger {
     return;
 }
 
+sub show_problems {
+    print "here are your problems\n";
+    $sql = "SELECT * FROM $project, ${project}Job WHERE $project.jobId = ${project}Job.jobId AND result != 'SUCCESS';";
+    if ($debug_xml) {print $sql, "\n";}
+    make_query($dbh_db, \$sth);
+    $nrows = 0;
+    print "# run file jobId augerId timeComplete hostname cput result\n";
+    while ($hashref = $sth->fetchrow_hashref) {
+	$nrows++;
+	print "$nrows $hashref->{run} $hashref->{file} $hashref->{jobId} $hashref->{augerId} $hashref->{timeComplete} $hashref->{hostname} $hashref->{cput} $hashref->{result}\n";
+    }
+    print "nrows = $nrows\n";
+    $sth->finish();
+}
+
 sub make_query {    
 
     my($dbh, $sth_ref) = @_;
@@ -718,5 +735,8 @@ jput
 
 jcache
     arg1: if present and non-zero, use only run number in file pattern for jcache
+
+show_problems : list jobs that did not succeed
+
 EOM
 }

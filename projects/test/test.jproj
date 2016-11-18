@@ -1,4 +1,5 @@
 <jproj>
+  <digits run="5" file="2"/>
   <inputFilePattern>/work/halld/home/marki/test/data_*_*.dat</inputFilePattern>
   <fileTypes>
     <fileType name="typeA">
