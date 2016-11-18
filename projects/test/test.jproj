@@ -1,3 +1,5 @@
 <jproj>
+<digits run="5" file="2"/>
 <inputFilePattern>/volatile/halld/detcom_02_1/smeared/hdgeant_smeared_*_*.hddm</inputFilePattern>
-</jproj>
+<outputFileDir>/volatile/halld/home/marki/proj/test/out</outputFileDir>
+<tapeFileDir>/mss/halld/halld-scratch/home/marki/test</tapeFileDir></jproj>
