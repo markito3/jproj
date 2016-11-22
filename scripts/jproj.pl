@@ -23,12 +23,12 @@ read_project_parameters();
 $host = 'hallddb.jlab.org';
 $user = 'farmer';
 $password = '';
-$database = 'farming2';
+$database = 'farming3';
 
-#print "Connecting to $user\@$host, using $database.\n";
+print "Connecting to $user\@$host, using $database.\n";
 $dbh_db = DBI->connect("DBI:mysql:$database:$host", $user, $password);
 if (defined $dbh_db) {
-    #print "Connection successful\n";
+    print "Connection successful\n";
 } else {
     die "Could not connect to the database server, exiting.\n";
 }
@@ -69,7 +69,7 @@ if ($action eq 'create') {
     print "jproj error: $action is not a valid action\n";
 }
 
-#print "disconnecting from server\n";
+print "disconnecting from server\n";
 $rc = $dbh_db->disconnect;
 
 exit;
@@ -587,7 +587,7 @@ sub status {
 }
 
 sub read_project_parameters {
-    $debug_xml = 1;
+    $debug_xml = 0;
     # slurp in the xml file
     $ref = XMLin("${project}.jproj", ForceArray=>['fileType']);
     # dump it to the screen for debugging only
