@@ -94,6 +94,7 @@ sub create {
   PRIMARY KEY  (run,file)
 ) ENGINE=MyISAM;";
     make_query($dbh_db, \$sth);
+
     $sql = 
 "CREATE TABLE ${project}Job (
   `augerId` int(11) DEFAULT NULL,
@@ -126,8 +127,31 @@ sub create {
   `error` varchar(1024) DEFAULT NULL,
   PRIMARY KEY (`augerId`)
 ) ENGINE=MyISAM;";
+    make_query($dbh_db, \$sth);
+
+    $sql = "CREATE TABLE ${project}Output (
+  id int(11) NOT NULL,
+  jobId int(11) NOT NULL,
+  outputTypeId tinyint(4) NOT NULL default '0',
+  output tinyint(4) NOT NULL default '0',
+  PRIMARY KEY (id)
+) ENGINE=MyISAM;";
 
     make_query($dbh_db, \$sth);
+
+    $sql = "CREATE TABLE ${project}OutputType (
+  id tinyint(4) NOT NULL AUTO_INCREMENT,
+  name VARCHAR(64) NOT NULL,
+  outputFileDir VARCHAR(256) NOT NULL,
+  outputTapeDir VARCHAR(256) NOT NULL,
+  PRIMARY KEY (id)
+) ENGINE=MyISAM;";
+
+    make_query($dbh_db, \$sth);
+    for (my $i = 0; $i < $nFileType; $i++) {
+	$sql = "INSERT INTO ${project}OutputType SET name = \"$fileTypeName[$i]\", outputFileDir = \"$outputFileDir[$i]\", outputTapeDir = \"$tapeFileDir[$i]\";";
+	make_query($dbh_db, \$sth);
+    }
 # create new swif workflow
     $command = "swif create -workflow $project";
     print "jproj.pl create: command = $command\n";
@@ -587,22 +611,42 @@ sub status {
 }
 
 sub read_project_parameters {
-    $debug_xml = 0;
+    $debug_xml = 1;
     # slurp in the xml file
-    $ref = XMLin("${project}.jproj", ForceArray=>['fileType']);
+    $ref = XMLin("${project}.jproj", KeyAttr=>[], ForceArray=>['fileType']);
+#    $ref = XMLin("${project}.jproj");
     # dump it to the screen for debugging only
     if ($debug_xml) {print Dumper($ref);}
     $runDigits = $ref->{digits}->{run};
     $fileDigits = $ref->{digits}->{file};
     $run_format = "%0${runDigits}d";
     $file_format = "%0${fileDigits}d";
+    $fileTypesHref = $ref->{fileTypes};
+    $fileTypeAref = $fileTypesHref->{fileType};
     $inputFilePattern = $ref->{inputFilePattern};
     $outputFileDir = $ref->{outputFileDir};
     $tapeFileDir = $ref->{tapeFileDir};
     if ($debug_xml) {
+	print "runDigits = $runDigits\n";
+	print "fileDigits = $fileDigits\n";
 	print "inputFilePattern = $inputFilePattern\n";
-	print "outputFileDir = $outputFileDir\n";
-	print "tapeFileDir = $tapeFileDir\n";
+	print "fileTypesHref = $fileTypesHref\n";
+	print "fileTypeAref = $fileTypeAref\n";
+    }
+    @fileTypeA = @$fileTypeAref;
+    $nFileType = $#fileTypeA + 1;
+    for (my $i = 0; $i < $nFileType; $i++) {
+	my $fileTypeHref = $fileTypeA[$i];
+	if ($debug_xml) {
+	    print "i = $i\n";
+	    print "fileTypeA[$i] = $fileTypeA[$i]\n";
+	    print "name = $fileTypeHref->{name}\n";
+	    print "outputFileDir = $fileTypeHref->{outputFileDir}\n";
+	    print "tapeFileDir = $fileTypeHref->{tapeFileDir}\n";
+	}
+	$fileTypeName[$i] = $fileTypeHref->{name};
+	$outputFileDir[$i] = $fileTypeHref->{outputFileDir};
+	$tapeFileDir[$i] = $fileTypeHref->{tapeFileDir};
     }
     return;
 }
