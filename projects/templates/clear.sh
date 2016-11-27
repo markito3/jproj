@@ -1,4 +1,4 @@
-#/bin/sh
+#!/bin/sh
 # delete the project and start over
 set PROJECT = `basename $PWD`
 echo "clearing tables ${PROJECT}, ${PROJECT}Job.................."
