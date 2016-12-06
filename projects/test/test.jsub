@@ -1,7 +1,7 @@
 PROJECT: gluex
 JOBNAME: {project}_{run_number}_{file_number}
 TRACK: debug
-COMMAND: /home/marki/jproj/projects/{project}/{project}.csh
+COMMAND: {projectDir}/{project}.csh
 OPTIONS: {project} {run_number} {file_number}
 TIME: 10
 OS: centos65

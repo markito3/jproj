@@ -393,15 +393,17 @@ sub add_one {
     $file = sprintf($file_format, $file_in);
     $jsub_file = "$jsub_file_path/${project}_${run}_${file}.jsub";
     open(JSUB, ">$jsub_file");
-    $jsub_file_template = "$project.jsub";
+    $jsub_file_template = "$projectDir/$project.jsub"; # projectDir needed for
+        # portability, defined by JPROJ environment variable
     if (-e $jsub_file_template) {
 	open(JSUB_TEMPLATE, "$jsub_file_template");
 	while ($line = <JSUB_TEMPLATE>) {
 	    if ($line =~ /INPUT_FILES:/) {
 		$line = "INPUT_FILES: " . $inputFilePattern . "\n";
-		$line =~ s/\*/{run_number}/;
-		$line =~ s/\*/{file_number}/;
+		$line =~ s/\*/{run_number}/; # first * is the run number
+		$line =~ s/\*/{file_number}/; # second * is the file number
 	    }
+	    $line =~ s/{projectDir}/$projectDir/g;
 	    $line =~ s/{project}/$project/g;
 	    $line =~ s/{run_number}/$run/g;
 	    $line =~ s/{file_number}/$file/g;
@@ -589,7 +591,8 @@ sub status {
 sub read_project_parameters {
     $debug_xml = 0;
     # slurp in the xml file
-    $ref = XMLin("${project}.jproj", KeyAttr=>[]);
+    $projectDir = $ENV{"JPROJ"} . "/projects/$project";
+    $ref = XMLin("$projectDir/${project}.jproj", KeyAttr=>[]);
     # dump it to the screen for debugging only
     if ($debug_xml) {print Dumper($ref);}
     $runDigits = $ref->{digits}->{run};
