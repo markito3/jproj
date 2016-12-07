@@ -65,11 +65,13 @@ if ($action eq 'create') {
     update_auger();
 } elsif ($action eq 'show_problems') {
     show_problems();
+} elsif ($action eq 'clear') {
+    clear();
 } else {
     print "jproj error: $action is not a valid action\n";
 }
 
-#print "disconnecting from server\n";
+print "disconnecting from server\n";
 $rc = $dbh_db->disconnect;
 
 exit;
@@ -673,6 +675,24 @@ sub show_problems {
     $sth->finish();
 }
 
+sub clear{
+    print "Are you sure you want to delete project $project (yes/NO)? ";
+    $answer = readline(STDIN);
+    chomp $answer;
+    if ($answer eq 'yes') {
+	open (SWIFLIST, "swif list |");
+	while (<SWIFLIST>) {
+	    print;
+	}
+	print "ok here we go\n";
+	system "swif cancel -workflow $project -delete";
+	$sql = "drop table ${project}; drop table ${project}Job";
+	print $sql, "\n";
+	make_query($dbh_db, \$sth);
+    }
+    return;
+}
+
 sub make_query {    
 
     my($dbh, $sth_ref) = @_;
@@ -740,6 +760,8 @@ jcache
     arg1: if present and non-zero, use only run number in file pattern for jcache
 
 show_problems : list jobs that did not succeed
+
+clear : delete a project
 
 EOM
 }
