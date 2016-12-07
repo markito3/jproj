@@ -246,6 +246,16 @@ sub update_output {
     if ($pattern_run_only ne '') {
 	print "file pattern will include only run number\n";
     }
+    $sql = "SELECT name, outputFileDir from ${project}OutputType";
+    make_query($dbh_db, \$sth0);
+    while (@row = $sth0->fetchrow_array) {
+	$typeName = $row[0];
+	$outputFileDir = $row[1];
+	print "jproj.pl info: processing output type = $typeName, looking in directory = $outputFileDir\n";
+	update_output_one();
+    }
+}
+sub update_output_one {
     $sql = "SELECT run, file FROM $project WHERE added = 1 AND output = 0 order by run, file";
     make_query($dbh_db, \$sth);
     $nprocessed = 0;
