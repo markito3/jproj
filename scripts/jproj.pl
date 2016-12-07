@@ -680,15 +680,38 @@ sub clear{
     $answer = readline(STDIN);
     chomp $answer;
     if ($answer eq 'yes') {
+	print "ok here we go\n";
 	open (SWIFLIST, "swif list |");
+	$found = 0;
 	while (<SWIFLIST>) {
 	    print;
+	    if (/workflow_name/) {
+		chomp;
+		@t = split(/= /);
+		print $t[1];
+		if ($t[1] eq "$project") {$found = 1;}
+	    }
 	}
-	print "ok here we go\n";
-	system "swif cancel -workflow $project -delete";
-	$sql = "drop table ${project}; drop table ${project}Job";
-	print $sql, "\n";
-	make_query($dbh_db, \$sth);
+	if ($found) {
+	    system "swif cancel -workflow $project -delete";
+	}
+	$sql = "show tables;";
+	#print $sql, "\n";
+	make_query($dbh_db, \$sth0);
+	while (@row = $sth0->fetchrow_array){
+	    #print $row[0], "\n";
+	    $tablename = $row[0];
+	    if ($tablename eq "$project") {
+		$sql = "drop table $tablename;";
+		print $sql, "\n";
+		make_query($dbh_db, \$sth1);
+	    }
+	    if ($tablename eq "${project}Job") {
+		$sql = "drop table $tablename;";
+		print $sql, "\n";
+		make_query($dbh_db, \$sth2);
+	    }
+	}
     }
     return;
 }
