@@ -65,6 +65,8 @@ if ($action eq 'create') {
     update_auger();
 } elsif ($action eq 'show_problems') {
     show_problems();
+} elsif ($action eq 'clear') {
+    clear();
 } else {
     print "jproj error: $action is not a valid action\n";
 }
@@ -726,6 +728,47 @@ sub show_problems {
     $sth->finish();
 }
 
+sub clear{
+    print "Are you sure you want to delete project $project (yes/NO)? ";
+    $answer = readline(STDIN);
+    chomp $answer;
+    if ($answer eq 'yes') {
+	print "ok here we go\n";
+	open (SWIFLIST, "swif list |");
+	$found = 0;
+	while (<SWIFLIST>) {
+	    print;
+	    if (/workflow_name/) {
+		chomp;
+		@t = split(/= /);
+		print $t[1];
+		if ($t[1] eq "$project") {$found = 1;}
+	    }
+	}
+	if ($found) {
+	    system "swif cancel -workflow $project -delete";
+	}
+	$sql = "show tables;";
+	#print $sql, "\n";
+	make_query($dbh_db, \$sth0);
+	while (@row = $sth0->fetchrow_array){
+	    #print $row[0], "\n";
+	    $tablename = $row[0];
+	    if ($tablename eq "$project") {
+		$sql = "drop table $tablename;";
+		print $sql, "\n";
+		make_query($dbh_db, \$sth1);
+	    }
+	    if ($tablename eq "${project}Job") {
+		$sql = "drop table $tablename;";
+		print $sql, "\n";
+		make_query($dbh_db, \$sth2);
+	    }
+	}
+    }
+    return;
+}
+
 sub make_query {    
 
     my($dbh, $sth_ref) = @_;
@@ -793,6 +836,8 @@ jcache
     arg1: if present and non-zero, use only run number in file pattern for jcache
 
 show_problems : list jobs that did not succeed
+
+clear : delete a project
 
 EOM
 }
