@@ -39,8 +39,6 @@ if ($action eq 'create') {
     populate();
 } elsif ($action eq 'add') {
     add();
-} elsif ($action eq 'drop') {
-    drop();
 } elsif ($action eq 'update') {
     update();
 } elsif ($action eq 'update_output') {
@@ -557,12 +555,6 @@ sub jcache_it {
     system $command;
 }
 
-sub drop {
-    $sql = "drop table $project, ${project}Job";
-    make_query($dbh_db, \$sth);
-    system "swif cancel $project";
-}
-
 sub run {
     $job_limit = $ARGV[2];
     $command = "swif run $project";
@@ -628,7 +620,7 @@ sub read_project_parameters {
     $debug_xml = 1;
     # slurp in the xml file
     $projectDir = $ENV{"JPROJ"} . "/projects/$project";
-    $ref = XMLin("${project}.jproj", KeyAttr=>[], ForceArray=>['fileType']);
+    $ref = XMLin("$projectDir/${project}.jproj", KeyAttr=>[], ForceArray=>['fileType']);
     # dump it to the screen for debugging only
     if ($debug_xml) {print Dumper($ref);}
     $runDigits = $ref->{digits}->{run};
@@ -760,6 +752,11 @@ sub clear{
 		make_query($dbh_db, \$sth1);
 	    }
 	    if ($tablename eq "${project}Job") {
+		$sql = "drop table $tablename;";
+		print $sql, "\n";
+		make_query($dbh_db, \$sth2);
+	    }
+	    if ($tablename eq "${project}Output") {
 		$sql = "drop table $tablename;";
 		print $sql, "\n";
 		make_query($dbh_db, \$sth2);
