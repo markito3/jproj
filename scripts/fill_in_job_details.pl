@@ -13,7 +13,7 @@ use DBI;
 $host = 'hallddb.jlab.org';
 $user = 'farmer';
 $password = '';
-$database = 'farming2';
+$database = 'farming3';
 
 print "Connecting to $user\@$host, using $database.\n";
 $dbh_db = DBI->connect("DBI:mysql:$database:$host", $user, $password);
