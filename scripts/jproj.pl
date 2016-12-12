@@ -754,12 +754,17 @@ sub clear{
 	    if ($tablename eq "${project}Job") {
 		$sql = "drop table $tablename;";
 		print $sql, "\n";
-		make_query($dbh_db, \$sth2);
+		make_query($dbh_db, \$sth1);
 	    }
 	    if ($tablename eq "${project}Output") {
 		$sql = "drop table $tablename;";
 		print $sql, "\n";
-		make_query($dbh_db, \$sth2);
+		make_query($dbh_db, \$sth1);
+	    }
+	    if ($tablename eq "${project}OutputType") {
+		$sql = "drop table $tablename;";
+		print $sql, "\n";
+		make_query($dbh_db, \$sth1);
 	    }
 	}
     }
