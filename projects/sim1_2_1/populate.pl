@@ -5,6 +5,6 @@ while (<RUNS>) {
     @t = split;
     $run = $t[0];
     $n = int($t[1]/25000*0.01 + 0.5);
-    print "jproj.pl sim1_2 populate $run $n\n";
+    print "jproj.pl sim1_2_1 populate $run $n\n";
 }
 exit;

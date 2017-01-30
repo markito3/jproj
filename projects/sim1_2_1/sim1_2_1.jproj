@@ -1,7 +1,7 @@
 <jproj>
-<project>sim1_2</project>
+<project>sim1_2_1</project>
 <digits run="6" file="4"/>
-<outputFileDir>/volatile/halld/gluex_simulations/sim1_2/rest</outputFileDir>
-<logFileDir>/work/halld/gluex_simulations/sim1_2/logs</logFileDir>
-<tapeFileDir>/mss/halld/gluex_simulations/sim1_2/rest</tapeFileDir>
+<outputFileDir>/volatile/halld/gluex_simulations/sim1_2_1/rest</outputFileDir>
+<logFileDir>/work/halld/gluex_simulations/sim1_2_1/logs</logFileDir>
+<tapeFileDir>/mss/halld/gluex_simulations/sim1_2_1/rest</tapeFileDir>
 </jproj>
