@@ -138,16 +138,16 @@ sub populate {
 
     $run_number = $ARGV[2];
     $number_of_files = $ARGV[3];
-    $sql = "select max(file) from $project where run = $run_number";
-    make_query($dbh_db, \$sth);
-    @row = $sth->fetchrow_array;
-    $file_number_found = $row[0];
-    if ($file_number_found) {
-	print "populate: max file number found = $file_number_found\n";
-    } else {
-	print "populate: no files found\n";
-    }
-    if ($number_of_files ne '') {
+    if ($number_of_files ne '' && $number_of_files > 0) {
+	$sql = "select max(file) from $project where run = $run_number";
+	make_query($dbh_db, \$sth);
+	@row = $sth->fetchrow_array;
+	$file_number_found = $row[0];
+	if ($file_number_found) {
+	    print "populate: max file number found = $file_number_found\n";
+	} else {
+	    print "populate: no files found\n";
+	}
 	print "populate: $number_of_files additional files requested\n";
 	for ($findex = $file_number_found + 1; $findex <= $file_number_found + $number_of_files; $findex++) {
 	    $file_number = $findex;
