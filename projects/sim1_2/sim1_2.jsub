@@ -3,12 +3,12 @@
   <Job>
     <Name name="{project}_{run_number}_{file_number}" />
     <Command>
-      /home/gxproj4/jproj/projects/{project}/{project}.csh {project} {run_number} {file_number}
+      /group/halld/www/halldweb/html/jproj/projects/{project}/{project}.csh {project} {run_number} {file_number}
     </Command>
   </Job>
   <Track name="simulation" />
   <Memory space="3800" unit="MB" />
-  <TimeLimit time="2100" unit="minutes" />
+  <TimeLimit time="2139" unit="minutes" />
   <OS name="centos7" />
   <DiskSpace space="4" unit="GB" />
 </Request>

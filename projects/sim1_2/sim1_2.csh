@@ -15,7 +15,7 @@ printenv | sort
 #
 # set number of events
 #
-set number_of_events = 25000
+set number_of_events = 20000
 #
 # set flags based on run number
 #
