@@ -3,15 +3,15 @@
   <inputFilePattern>/work/halld/home/marki/test/data_*_*.dat</inputFilePattern>
   <fileTypes>
     <fileType name="typeA">
-      <outputFileDir>/scratch/marki/test/typeA</outputFileDir>
+      <outputFileDir>/u/scratch/marki/test/typeA</outputFileDir>
       <tapeFileDir>/mss/halld/halld-scratch/test/typeA</tapeFileDir>
     </fileType>
     <fileType name="typeB">
-      <outputFileDir>/scratch/marki/test/typeB</outputFileDir>
+      <outputFileDir>/u/scratch/marki/test/typeB</outputFileDir>
       <tapeFileDir>/mss/halld/halld-scratch/test/typeB</tapeFileDir>
     </fileType>
     <fileType name="typeC">
-      <outputFileDir>/scratch/marki/test/typeC</outputFileDir>
+      <outputFileDir>/u/scratch/marki/test/typeC</outputFileDir>
       <tapeFileDir>/mss/halld/halld-scratch/test/typeC</tapeFileDir>
     </fileType>
   </fileTypes>

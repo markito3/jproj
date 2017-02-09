@@ -425,6 +425,17 @@ sub add_one {
     my $job_id = "job index undefined";
     $run = sprintf($run_format, $run_in);
     $file = sprintf($file_format, $file_in);
+#
+# create "command" script
+#
+    $command_dir = "/work/halld/home/$ENV{USER}/jproj_scripts";
+    system("mkdir -p $command_dir");
+    $command_script = "${command_dir}/${project}_${run}_${file}.csh";
+    system("cat /tmp/environment_${project} $projectDir/${project}.csh > $command_script");
+    system("chmod a+x $command_script");
+#
+# prepare batch control file and add to swif
+#
     $jsub_file = "$jsub_file_path/${project}_${run}_${file}.jsub";
     open(JSUB, ">$jsub_file");
     $jsub_file_template = "$projectDir/$project.jsub"; # projectDir needed for
@@ -441,6 +452,7 @@ sub add_one {
 	    $line =~ s/{project}/$project/g;
 	    $line =~ s/{run_number}/$run/g;
 	    $line =~ s/{file_number}/$file/g;
+	    $line =~ s/{command}/$command_script/g;
 	    print JSUB $line;
 	}
 	close(JSUB);
@@ -617,7 +629,12 @@ sub status {
 }
 
 sub read_project_parameters {
-    $debug_xml = 1;
+    $debug_xml = 0;
+    open(ENVDEF, ">/tmp/environment_${project}");
+    print ENVDEF "#!/bin/tcsh\n";
+    print ENVDEF "setenv project $project\n";
+    print ENVDEF "setenv run \$1\n";
+    print ENVDEF "setenv file \$2\n";
     # slurp in the xml file
     $projectDir = $ENV{"JPROJ"} . "/projects/$project";
     $ref = XMLin("$projectDir/${project}.jproj", KeyAttr=>[], ForceArray=>['fileType']);
@@ -653,7 +670,9 @@ sub read_project_parameters {
 	$fileTypeName[$i] = $fileTypeHref->{name};
 	$outputFileDir[$i] = $fileTypeHref->{outputFileDir};
 	$tapeFileDir[$i] = $fileTypeHref->{tapeFileDir};
+	print ENVDEF "setenv outputFileDir_$fileTypeName[$i] $outputFileDir[$i]\n";
     }
+    close(ENVDEF);
     return;
 }
 
