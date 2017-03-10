@@ -46,11 +46,14 @@ while (@row = $sth_jobid->fetchrow_array) {
     }
     if ($get_job_info) {
 	$count_update++;
+	#print "augerid = $augerid\n";
 	%jobhash = get_job_hash($augerid);
+	#print "jobhash = %jobhash\n";
 	$sql = "UPDATE $table SET\n";
 	$first = 1;
 	foreach $key (keys(%jobhash)) {
 	    $value = $jobhash{$key};
+	    #print "key = $key, value = $value\n";
 	    if ($key eq "walltime"
 		|| $key eq "cput"
 		|| $key eq "files"
@@ -84,7 +87,7 @@ exit;
 sub get_job_hash {
     my ($jobid) = @_;
     my %jobhash = ();
-    open(WGET, "wget -q -O- \"http://scicomp.jlab.org/scicomp/AugerJobServlet?requested=jobDetails&id=$jobid\" |");
+    open(WGET, "wget -q -O- \"http://scicompold.jlab.org/scicomp/AugerJobServlet?requested=jobDetails&id=$jobid\" |");
     $line = <WGET>;
 #    print $line;
     chomp $line;
