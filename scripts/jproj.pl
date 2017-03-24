@@ -460,7 +460,7 @@ sub jput {
 	    if ($nfile != 0) {
 		jput_it();
 	    }
-	    $command = "cd $outputFileDir ; jput";
+	    $command = "cd $outputFileDir ; jput -n";
 	}
 	$run = sprintf($run_format, $column[0]);
 	$file = sprintf($file_format, $column[1]);
