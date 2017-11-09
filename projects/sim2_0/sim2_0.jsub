@@ -1,0 +1,14 @@
+<Request>
+  <Project name="gluex" />
+  <Job>
+    <Name name="{project}_{run_number}_{file_number}" />
+    <Command>
+      /group/halld/www/halldweb/html/jproj/projects/{project}/{project}.csh {project} {run_number} {file_number}
+    </Command>
+  </Job>
+  <Track name="simulation" />
+  <Memory space="3200" unit="MB" />
+  <TimeLimit time="1700" unit="minutes" />
+  <OS name="centos7" />
+  <DiskSpace space="40" unit="GB" />
+</Request>
