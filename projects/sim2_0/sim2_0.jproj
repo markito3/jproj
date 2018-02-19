@@ -1,0 +1,7 @@
+<jproj>
+<project>sim2_0</project>
+<digits run="6" file="4"/>
+<outputFileDir>/volatile/halld/gluex_simulations/sim2_0/rest</outputFileDir>
+<logFileDir>/work/halld/gluex_simulations/sim2_0/logs</logFileDir>
+<tapeFileDir>/mss/halld/gluex_simulations/sim2_0/rest</tapeFileDir>
+</jproj>
