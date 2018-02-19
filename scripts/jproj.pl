@@ -500,10 +500,10 @@ sub jcache {
 	    if ($nfile != 0) {
 		jcache_it();
 	    }
-	    $command = "jcache submit halld";
+	    $command = "jcache get";
 	}
-	$run = sprintf("%05d", $column[0]);
-	$file = sprintf("%07d", $column[1]);
+	$run = sprintf($run_format, $column[0]);
+	$file = sprintf($file_format, $column[1]);
 	if ($pattern_run_only) {
 	    $file_pattern = $run;
 	} else {
